@@ -1,6 +1,12 @@
+import json
+from unicodedata import name
+
 from mongoengine import *
 
-from models.tool import Tool
+try:
+    from connection.models.tool import Tool
+except Exception as e:
+    from models.tool import Tool
 
 
 class Host(Document):
@@ -16,3 +22,20 @@ class Host(Document):
     service_group = StringField(max_length=50)
     tags = ListField(StringField())
     tools = ListField(EmbeddedDocumentField(Tool))
+
+    def toDict(self) -> str:
+        dictonary = {
+            "primary_ip": self.primary_ip,
+            "name": self.name,
+            "fqdn": self.fqdn,
+            "os": self.os,
+            "team_name": self.team_name,
+            "service_group": self.service_group,
+            "tags":  [],
+            "tools": []
+        }
+        for tag in self.tags:
+            dictonary['tags'].append(tag)
+        for tool in self.tools:
+            dictonary['tools'].append(tool.toDict())
+        return dictonary

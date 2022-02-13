@@ -1,15 +1,18 @@
 from time import sleep
 
-import connection
+if __package__ is None or __package__ == '':
+    from connection import MongoConnection
+else:
+    from connection.connection import MongoConnection
 
 
 def test_wipe_db():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     myconn.WipeCollection()
 
 
 def test_build_board():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
 
     board = [
         {
@@ -70,7 +73,7 @@ def test_build_board():
 
 
 def test_query_team():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     hosts = myconn.GetTeamHosts(["Hulto"])
     if len(set(hosts)) != 3:
         # raise Exception(f"Incorrect number of hosts:\n{len(set(hosts))}/3")
@@ -84,7 +87,7 @@ def test_query_team():
 
 
 def test_query_multiple_team():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     hosts = myconn.GetTeamHosts(["Hulto", "squidli"])
     if len(set(hosts)) != 6:
         return False
@@ -99,7 +102,7 @@ def test_query_multiple_team():
 
 
 def test_query_servicegroup():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     hosts = myconn.GetServiceHosts(["web-server"])
     if len(set(hosts)) != 2:
         return False
@@ -110,7 +113,7 @@ def test_query_servicegroup():
 
 
 def test_query_multiple_servicegroup():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     hosts = myconn.GetServiceHosts(["web-server", "mail-server"])
     if len(set(hosts)) != 4:
         return False
@@ -121,21 +124,21 @@ def test_query_multiple_servicegroup():
 
 
 def test_callback():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     one = myconn.RegisterCallback("10.0.0.1", "reptile")
     two = myconn.RegisterCallback("10.0.0.1", "reptile")
     return (two-one == 1)
 
 
 def test_callback_update_poc():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     one = myconn.RegisterCallback("10.0.0.1", "reptile")
     two = myconn.RegisterCallback("10.0.0.1", "reptile")
     return (two-one == 1)
 
 
 def test_query_active_tool():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     hosts = myconn.GetInstalledToolHosts(["reptile", "goofkit"])
     if len(set(hosts)) != 1:
         return False
@@ -146,7 +149,7 @@ def test_query_active_tool():
 
 
 def test_query_never_active_tool():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     hosts = myconn.GetNeverActiveToolHosts(["reptile", ])
     if len(set(hosts)) != 5:
         # return False
@@ -166,7 +169,7 @@ def test_query_never_active_tool():
 
 
 def test_query_timedout_tool():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     hosts = myconn.GetTimedOutToolHosts(["reptile", "goofkit"], 2)
     if len(set(hosts)) != 1:
         return False
@@ -177,7 +180,7 @@ def test_query_timedout_tool():
 
 
 def test_query_active_tool():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     hosts = myconn.GetActiveToolHosts(["reptile"], 5)
     if len(set(hosts)) != 1:
         return False
@@ -188,7 +191,7 @@ def test_query_active_tool():
 
 
 def test_create_tool_desc():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     _ = myconn.CreateToolDescription(
         tool_name="goofkit", poc="Hulto", usage="kill -36 1")
     _ = myconn.CreateToolDescription(
@@ -204,7 +207,7 @@ def test_create_tool_desc():
 
 
 def test_update_tool_desc():
-    myconn = connection.MongoConnection()
+    myconn = MongoConnection()
     _ = myconn.CreateToolDescription(
         tool_name="reptile", poc="squidli", usage="/root/reptile_up")
 

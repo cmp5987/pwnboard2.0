@@ -15,6 +15,14 @@ class Tool(EmbeddedDocument):
     firstseen = DateTimeField(default=datetime.datetime.utcnow)
     totalbeacons = IntField(default=0)
 
+    def toDict(self):
+        return {
+            'tool_name': self.tool_name,
+            'lastseen': self.lastseen.isoformat(),
+            'firstseen': self.firstseen.isoformat(),
+            'totalbeacons': self.totalbeacons
+        }
+
 
 class ToolDescription(Document):
     """This class is a DRM (Document Relational Model) for mongoDB. This class defines \

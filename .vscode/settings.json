@@ -1,5 +1,7 @@
 {
-    "python.analysis.extraPaths": [
-        "./api"
-    ]
+  "python.analysis.extraPaths": [
+    "./api",
+    "./api/connection",
+    "./api/connection/models"
+  ]
 }

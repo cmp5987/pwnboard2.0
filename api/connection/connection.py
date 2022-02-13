@@ -7,8 +7,12 @@ import mongoengine
 from mongoengine.errors import NotUniqueError
 from pymongo.errors import DuplicateKeyError
 
-from models.host import Host
-from models.tool import Tool, ToolDescription
+if __package__ is None or __package__ == '':
+    from models.host import Host
+    from models.tool import Tool, ToolDescription
+else:
+    from connection.models.host import Host
+    from connection.models.tool import Tool, ToolDescription
 
 
 class MongoConnection():
@@ -74,6 +78,7 @@ class MongoConnection():
         error or an exception will be raisedd
         :rtype: List[Host]
         """
+        Host.drop_collection()
         boardobjs = []
         for host in board:
             boardobjs.append(self.createHostDict(host))
@@ -91,6 +96,20 @@ class MongoConnection():
         boardobjs = []
         for host in Host.objects():
             boardobjs.append(host)
+        return boardobjs
+
+    def GetBoardDict(self) -> List[dict]:
+        """Returns the current board in JSON. Pulls all hosts form the database. This may
+        eventually become cached in redis if performance is an issue.
+
+
+        :return: The whole board as a List of dict, An empty [] will be returned on \
+        error or an exception will be raisedd
+        :rtype: List[dict]
+        """
+        boardobjs = []
+        for host in Host.objects():
+            boardobjs.append(host.toDict())
         return boardobjs
 
     def GetHost(self, primary_ip: str) -> Host:
@@ -129,6 +148,8 @@ class MongoConnection():
         :return: The Host object createdd.
         :rtype: Host
         """
+        if not isinstance(hostdict, dict):
+            raise Exception(f"Expected dictionary recived {type(hostdict)}")
         if 'primaryIP' not in hostdict.keys() or \
             'serviceGroup' not in hostdict.keys() or \
                 'teamName' not in hostdict.keys():

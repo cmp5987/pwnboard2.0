@@ -1,55 +1,43 @@
+import json
 
-from flask import Flask, request
+from aiohttp import web
 
-import connection
+from connection.connection import MongoConnection
 
-app = Flask(__name__)
+routes = web.RouteTableDef()
 
-
-# @app.route('/', methods=['GET', 'POST'])
-# def helloworld():
-#     return "Beep Boop API go away."
-#     return "Beep Boop API go away."
-
-@app.route('/define_board', methods=['POST'])
-def defineboard(board_config=None):
-    req_json = request.get_json()
-    if board_config == None and req_json is not None:
-        return req_json
-    return "err"
+db = MongoConnection()
 
 
-@app.route('/<callback_type>', methods=['POST'])
-def callback(callback_type):
-    r = redis.Redis(connection_pool=pool)
+@routes.post('/setboard')
+async def setboard(request):
+    """
+    curl -X POST http://localhost:5000/setboard -H 'Content-Type: application/json' -d '[{"name": "Hulto - web-server", "primaryIP": "10.0.0.1", "os": "LINUX", "serviceGroup": "web-server", "teamName": "Hulto", "tags": ["Linux", "Web", "HTTP"]}, {"name": "Hulto  - mail-server", "primaryIP": "10.0.0.2", "os": "LINUX", "serviceGroup": "mail-server", "teamName": "Hulto", "tags": ["Linux", "mail"]}, {"name": "Hulto  - ssh-server", "primaryIP": "10.0.0.3", "os": "LINUX", "serviceGroup": "ssh-server", "teamName": "Hulto", "tags": ["Linux", "ssh"]}, {"name": "squidli  - web-server", "primaryIP": "10.0.1.1", "os": "LINUX", "serviceGroup": "web-server", "teamName": "squidli", "tags": ["Linux", "Web", "HTTP"]}, {"name": "squidli  - mail-server", "primaryIP": "10.0.1.2", "os": "LINUX", "serviceGroup": "mail-server", "teamName": "squidli", "tags": ["Linux", "mail"]}, {"name": "squidli  - ssh-server", "primaryIP": "10.0.1.3", "os": "LINUX", "serviceGroup": "ssh-server", "teamName": "squidli", "tags": ["Linux", "ssh"]}]'
+    """
+    body = await request.text()
+    jsondDoc = json.loads(body)
+    _ = db.BuildBoard(jsondDoc)
+    board = db.GetBoardDict()
+    return web.Response(text=json.dumps(board))
 
-    return callback_type
+
+@ routes.get('/getboard')
+async def getboard(request):
+    """
+    curl localhost:5000/getboard
+    """
+    board = db.GetBoardDict()
+    return web.Response(text=json.dumps(board))
 
 
-@app.route('/filter', methods=['GET'])
-def filter():
-    teams_to_query = None
-    if request.args.get('teams') is not None:
-        teams = list(set(request.args.get('teams').split(',')))
-        teams_to_query = str(teams)
-
-    hosts_to_query = None
-    if request.args.get('hosts') is not None:
-        hosts = list(set(request.args.get('hosts').split(',')))
-        hosts_to_query = str(hosts)
-
-    oses_to_query = None
-    if request.args.get('oses') is not None:
-        oses = list(set(request.args.get('oses').split(',')))
-        oses_to_query = str(oses)
-
-    tool_to_query = None
-    if request.args.get('tools') is not None:
-        tools = list(set(request.args.get('tools').split(',')))
-        tools = str(tools)
-
-    return f"{teams_to_query} && {hosts_to_query}"
+@ routes.get('/filter')
+async def filter(request):
+    board = db.GetBoardDict()
+    return web.Response(text=json.dumps(board))
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    db = MongoConnection()
+    app = web.Application()
+    app.add_routes(routes)
+    web.run_app(app, port=5000)
