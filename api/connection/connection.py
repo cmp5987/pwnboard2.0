@@ -289,6 +289,22 @@ class MongoConnection():
             hostList.append(host)
         return hostList
 
+    def GetOsHosts(self, oses: List[str]) -> List[Host]:
+        """Filter for hosts from specific oses.
+
+
+        :param oses: A list of oses to pull hosts from. `["Debian","rhel"]`
+        :type oses: List[str]
+
+        :return: A list of hosts belonging to the requested oses, returns [] on error or \
+        none found.
+        :rtype: List[Host]
+        """
+        hostList = []
+        for host in Host.objects(os__in=oses):
+            hostList.append(host)
+        return hostList
+
     def GetInstalledToolHosts(self, tool_names: List[str]) -> List[Host]:
         """Filter for hosts that have had a tool installed.
 
@@ -406,3 +422,62 @@ class MongoConnection():
                 tool_name__in=tool_names):
             toolDescs.append(toolDesc)
         return toolDescs
+
+    def Filter(self, teams: List[str], service_groups: List[str], oses: List[str],
+               tool_names: List[str], tool_match: str = "active", timeout: int = 480) -> List[Host]:
+        """Given a series of lists (teams, services, osses, and tools) bulid a unique set \
+            of the corresponding Hosts.
+
+        :param teams: A list of team names.
+        :type teams: List[str]
+        :param service_groups: A list of service_groups.
+        :type service_groups: List[str]
+        :param oses: A list of oses.
+        :type oses: List[str]
+        :param tool_names: A list of tool names.
+        :type tool_names: List[str]
+        :param tool_match: Type of matching on tool set. (active, inactive, installed, never present)
+        :type tool_match: str
+        :param timeout: Number of seconds for a tool to be considered inactive.
+        :type timeout: int
+
+        :return: A list of dictionary objects based on the names provided, returns [] on error \
+        or none foundd.
+        :rtype: List[ToolDescription]
+        """
+
+        teamSet = set()
+        servicesSet = set()
+        osesSet = set()
+        toolSet = set()
+        if len(teams) > 0:
+            teamSet = set(self.GetTeamHosts(teams))
+
+        if len(service_groups) > 0:
+            servicesSet = set(self.GetServiceHosts(service_groups))
+
+        if len(oses) > 0:
+            servicesSet = set(self.GetOsHosts(oses))
+
+        if len(tool_names) > 0:
+            if tool_match == "active":
+                toolSet = set(self.GetActiveToolHosts(tool_names))
+            elif tool_match == "inactive":
+                toolSet = set(self.GetTimedOutToolHosts(tool_names))
+            elif tool_match == "never":
+                toolSet = set(self.GetNeverActiveToolHosts(tool_names))
+            elif tool_match == "installed":
+                toolSet = set(self.GetInstalledToolHosts(tool_names))
+
+        list_of_sets = [teamSet, servicesSet, osesSet, toolSet]
+        # Empty sets evaluate to false,
+        # so will be excluded from list comp.
+        non_empties = [x for x in list_of_sets if x]
+        res = []
+
+        if len(non_empties) > 0:
+            solution_set = set.intersection(*non_empties)
+            i: Host
+            for i in list(solution_set):
+                res.append(i.toDict())
+        return res

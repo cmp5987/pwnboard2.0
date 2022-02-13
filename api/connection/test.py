@@ -1,3 +1,4 @@
+import sys
 from time import sleep
 
 if __package__ is None or __package__ == '':
@@ -26,10 +27,10 @@ def test_build_board():
         {
             "name": "Hulto  - mail-server",
             "primaryIP": "10.0.0.2",
-            "os": "LINUX",
+            "os": "Windows",
             "serviceGroup": "mail-server",
             "teamName": "Hulto",
-            "tags": ["Linux", "mail"]
+            "tags": ["Windows", "mail"]
         },
         {
             "name": "Hulto  - ssh-server",
@@ -50,10 +51,10 @@ def test_build_board():
         {
             "name": "squidli  - mail-server",
             "primaryIP": "10.0.1.2",
-            "os": "LINUX",
+            "os": "Windows",
             "serviceGroup": "mail-server",
             "teamName": "squidli",
-            "tags": ["Linux", "mail"]
+            "tags": ["Windows", "mail"]
         },
         {
             "name": "squidli  - ssh-server",
@@ -66,8 +67,10 @@ def test_build_board():
     ]
     _ = myconn.BuildBoard(board)
     board = myconn.GetBoard()
+    if len(set(board)) != 6:
+        return False
     for host in board:
-        if host.os != "LINUX":
+        if '10.0.' not in host.primary_ip:
             return False
     return True
 
@@ -93,7 +96,7 @@ def test_query_multiple_team():
         return False
         # raise Exception(f"Incorrect number of hosts:\n{len(set(hosts))}/6")
     for host in hosts:
-        if host.os != "LINUX":
+        if '10.0.' not in host.primary_ip:
             return False
             # raise Exception(
             #     f"Incorrect primary_ip {host.primary_ip}\nExpected 10.0.0.X")
@@ -118,7 +121,7 @@ def test_query_multiple_servicegroup():
     if len(set(hosts)) != 4:
         return False
     for host in hosts:
-        if host.os != "LINUX":
+        if '10.0.' not in host.primary_ip:
             return False
     return True
 
@@ -163,7 +166,7 @@ def test_query_never_active_tool():
     if len(set(hosts)) != 6:
         return False
     for host in hosts:
-        if host.os != "LINUX":
+        if '10.0.' not in host.primary_ip:
             return False
     return True
 
@@ -223,6 +226,19 @@ def test_update_tool_desc():
     return True
 
 
+def test_filter():
+    myconn = MongoConnection()
+    results = myconn.Filter(
+        teams=["Hulto"], service_groups=["web-server"],
+        oses=[], tool_names=[])
+    if len(results) != 1:
+        return False
+    if 'primary_ip' not in results[0]:
+        return False
+    if results[0]['primary_ip'] != "10.0.0.1":
+        return False
+
+
 if __name__ == '__main__':
     test_wipe_db()
     print(f"TEST test_build_board():              {test_build_board()}")
@@ -253,3 +269,5 @@ if __name__ == '__main__':
         f"TEST test_create_tool_desc():         {test_create_tool_desc()}")
     print(
         f"TEST test_update_tool_desc():         {test_update_tool_desc()}")
+    print(f"TEST test_filter():                   {test_filter()}")
+    # test_filter()
