@@ -4,6 +4,10 @@ from models.tool import Tool
 
 
 class Host(Document):
+    """This class is a DRM (Document Relational Model) for mongoDB. This class defines \
+    the Host objects. These represent target systems and can be tracked by their various \
+    attributes most commonly `team_name` and `service_group`
+    """
     primary_ip = StringField(required=True, unique=True)
     name = StringField()
     fqdn = StringField()

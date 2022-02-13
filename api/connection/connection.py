@@ -1,7 +1,6 @@
 import datetime
 import sys
 import time
-from operator import truediv
 from typing import Any, List
 
 import mongoengine
@@ -28,10 +27,11 @@ class MongoConnection():
 
     conn = None
 
-    def __init__(self,
-                 mongodb_db: str = "pwnboard",
-                 mongodb_host: str = "127.0.0.1",
-                 mongodb_port: int = 27017):
+    def __init__(
+            self,
+            mongodb_db: str = "pwnboard",
+            mongodb_host: str = "127.0.0.1",
+            mongodb_port: int = 27017):
         self.conn = mongoengine.connect(
             mongodb_db, host=mongodb_host, port=mongodb_port)
 
@@ -43,36 +43,36 @@ class MongoConnection():
         ToolDescription.drop_collection()
 
     def BuildBoard(self, board: list) -> List[Host]:
-        """Takes in a list of dictionaries defining the board. Modeled after the paragon
+        """Takes in a list of dictionaries defining the board. Modeled after the paragon \
         board. Example board:
-        :param board: A list of JSON dictionaries
-        ```
-        [
-            {
-                "name": "Hulto - web-server",
-                "primaryIP": "10.0.0.1",
-                "os": "LINUX",
-                "serviceGroup": "web-server",
-                "teamName": "Hulto",
-                "tags": ["Linux", "Web", "HTTP"]
-            },
-            {
-                "name": "Hulto  - mail-server",
-                "primaryIP": "10.0.0.2",
-                "os": "LINUX",
-                "serviceGroup": "mail-server",
-                "teamName": "Hulto",
-                "tags": ["Linux", "mail"]
-            },
-        ]
-        ```
-        The primaryIP, serviceGroup, and teamName fields are required others can be used
-        as the need arises.
+        ::
+            [
+                {
+                    "name": "Hulto - web-server",
+                    "primaryIP": "10.0.0.1",
+                    "os": "LINUX",
+                    "serviceGroup": "web-server",
+                    "teamName": "Hulto",
+                    "tags": ["Linux", "Web", "HTTP"]
+                },
+                {
+                    "name": "Hulto  - mail-server",
+                    "primaryIP": "10.0.0.2",
+                    "os": "LINUX",
+                    "serviceGroup": "mail-server",
+                    "teamName": "Hulto",
+                    "tags": ["Linux", "mail"]
+                },
+            ]
+
+
+        :param board: A list of JSON dictionaries The primaryIP, serviceGroup, and teamName fields \
+        are required others can be used as the need arises.
         :type board: List[Host]
-        :return: The board we just built as a List of Host objects, An empty [] will be returned on
+
+        :return: The board we just built as a List of Host objects, An empty [] will be returned on \
         error or an exception will be raisedd
         :rtype: List[Host]
-
         """
         boardobjs = []
         for host in board:
@@ -82,7 +82,9 @@ class MongoConnection():
     def GetBoard(self) -> List[Host]:
         """Returns the current board. Pulls all hosts form the database. This may
         eventually become cachedd in redis if performance is an issue.
-        :return: The whole board as a List of Host objects, An empty [] will be returned on
+
+
+        :return: The whole board as a List of Host objects, An empty [] will be returned on \
         error or an exception will be raisedd
         :rtype: List[Host]
         """
@@ -93,8 +95,11 @@ class MongoConnection():
 
     def GetHost(self, primary_ip: str) -> Host:
         """Return Host object matched by primary_ip (the primary key for Host).
+
+
         :param primary_ip: The primary_ip used by the Host.
         :type primary_ip: str
+
         :return: The Host object requested.
         :rtype: Host
         """
@@ -107,18 +112,20 @@ class MongoConnection():
     def createHostDict(self, hostdict: dict) -> Host:
         """Create a new Host object. Derived from a dictionary or
         loaded JSON.
-        :param hostdict: The structure defining the Host. eg.
-        ```
-        {
-            "name": "Hulto - web-server",
-            "primaryIP": "10.0.0.1",
-            "os": "LINUX",
-            "serviceGroup": "web-server",
-            "teamName": "Hulto",
-            "tags": ["Linux", "Web", "HTTP"]
-        }
-        ```
+        ::
+            {
+                "name": "Hulto - web-server",
+                "primaryIP": "10.0.0.1",
+                "os": "LINUX",
+                "serviceGroup": "web-server",
+                "teamName": "Hulto",
+                "tags": ["Linux", "Web", "HTTP"]
+            }
+
+
+        :param hostdict: The structure defining the Host.
         :type hostdict: dict
+
         :return: The Host object createdd.
         :rtype: Host
         """
@@ -146,10 +153,13 @@ class MongoConnection():
             )
         return newhost
 
-    def createHost(self, primary_ip: str, name: str, fqdn: str,
-                   os: str, team_name: str, service_group: str,
-                   tags: List[str]) -> Host:
+    def createHost(
+        self, primary_ip: str, name: str, fqdn: str, os: str,
+        team_name: str, service_group: str, tags: List[str]
+    ) -> Host:
         """Create a new Host object and save it to the database.
+
+
         :param primary_ip: The primary_ip used by the Host.
         :type primary_ip: str
         :param name: A common name used to describe the host.
@@ -183,8 +193,11 @@ class MongoConnection():
 
     def createTool(self, tool_name: str) -> Tool:
         """Creates a new Tool object given the name.
+
+
         :param tool_name: The name of the being recorded.
         :type tool_name: str
+
         :return: The Tool object created.
         :rtype: Tool
         """
@@ -193,10 +206,13 @@ class MongoConnection():
 
     def RegisterCallback(self, primary_ip: str, tool_name: str) -> int:
         """Registers a callback for a tool against an IP.
+
+
         :param primary_ip: The primary IP used by the host.
         :type primary_ip: str
         :param tool_name: The name of the being recorded.
         :type tool_name: str
+
         :return: The total number of beacons recived for that tool/ip combination.
         :rtype: int
         """
@@ -223,8 +239,11 @@ class MongoConnection():
     # in the team_name list. eg. ["Hulto", "squid"] or ["Hulto"]
     def GetTeamHosts(self, team_name: List[str]) -> List[Host]:
         """Filter for hosts from specific teams.
+
+
         :param team_name: A list of team names to pull hosts from. `["Hulto","squidli"]`
         :type team_name: List[str]
+
         :return: A list of hosts belonging to the requested teams, returns [] on error or none foundd.
         :rtype: List[Host]
         """
@@ -235,10 +254,13 @@ class MongoConnection():
 
     def GetServiceHosts(self, service_group: List[str]) -> List[Host]:
         """Filter for hosts from specific service groups.
+
+
         :param service_group: A list of service groups to pull hosts from. `["web-server","ssh-server"]`
         :type team_name: List[str]
-        :return: A list of hosts belonging to the requested service groups, returns [] on error or
-        none foundd.
+
+        :return: A list of hosts belonging to the requested service groups, returns [] on error or \
+        none found.
         :rtype: List[Host]
         """
         hostList = []
@@ -248,10 +270,13 @@ class MongoConnection():
 
     def GetInstalledToolHosts(self, tool_names: List[str]) -> List[Host]:
         """Filter for hosts that have had a tool installed.
-        :param tool_names: A list of tool names. If any have called back to pwnboard from a host
+
+
+        :param tool_names: A list of tool names. If any have called back to pwnboard from a host \
         that host will be returned. `["goofkit","reptile"]`
         :type team_name: List[str]
-        :return: A list of hosts belonging to the requested tools, returns [] on error or
+
+        :return: A list of hosts belonging to the requested tools, returns [] on error or \
         none foundd.
         :rtype: List[Host]
         """
@@ -262,10 +287,13 @@ class MongoConnection():
 
     def GetNeverActiveToolHosts(self, tool_names: List[str]) -> List[Host]:
         """Filter for hosts that have never had a tool installed.
-        :param tool_names: A list of tool names. If a callback has never been seen from one of
+
+
+        :param tool_names: A list of tool names. If a callback has never been seen from one of \
         those tool/host combinations that host will be returned. `["goofkit","reptile"]`
         :type team_name: List[str]
-        :return: A list of hosts belonging to the requested tools, returns [] on error or
+
+        :return: A list of hosts belonging to the requested tools, returns [] on error or \
         none foundd.
         :rtype: List[Host]
         """
@@ -276,13 +304,16 @@ class MongoConnection():
 
     def GetTimedOutToolHosts(self, tool_names: List[str], timeout_seconds: int) -> List[Host]:
         """Filter for hosts that have a tool installed but haven't see it in timeout_seconds.
-        :param tool_names: A list of tool names. If a callback has been seen before but not within
+
+
+        :param tool_names: A list of tool names. If a callback has been seen before but not within \
         the last `tool_names` seconds that host will be returned. `["goofkit","reptile"]`
         :type team_name: List[str]
         :param timeout_seconds: The number of seconds before a tool is counted as timed out.
         :type timeout_seconds: int
-        :return: A list of hosts belonging to the requested tools and outside the request timeout, returns [] on error or
-        none foundd.
+
+        :return: A list of hosts belonging to the requested tools and outside the request timeout, \
+        returns [] on error or none foundd.
         :rtype: List[Host]
         """
         hostList = []
@@ -293,14 +324,17 @@ class MongoConnection():
 
     def GetActiveToolHosts(self, tool_names: List[str], timeout_seconds: int) -> List[Host]:
         """Filter for hosts that have a tool installed and have seen it within timeout_seconds.
-        :param tool_names: A list of tool names. If a callback has been seen and is within
+
+
+        :param tool_names: A list of tool names. If a callback has been seen and is within \
         `timeout_seconds` seconds that host will be returned. `["goofkit","reptile"]`
-        :type team_name: List[str]
+        :type team_name: List[str],
+
         :param timeout_seconds: The number of seconds before a tool is counted as timed out.
         :type timeout_seconds: int
-        :return: A list of hosts belonging to the requested tools and within the request timeout,
-        returns [] on error or
-        none foundd.
+
+        :return: A list of hosts belonging to the requested tools and within the request timeout, \
+        returns [] on error or none foundd.
         :rtype: List[Host]
         """
         hostList = []
@@ -312,6 +346,8 @@ class MongoConnection():
     def CreateToolDescription(self, tool_name: str, poc: str, usage: str) -> None:
         """Create a tool description object and save it to the DB. Tool Descriptions help users
         better identify and use tools when working with pwnboard.
+
+
         :param tool_name: The name of your tool.
         :type team_name: str
         :param poc: The point of contact for the tool used for questions, and trouble shooting.
@@ -335,9 +371,12 @@ class MongoConnection():
 
     def GetToolDescription(self, tool_names: List[str]) -> List[ToolDescription]:
         """Get the description objects of multiple tools given a list of tool names.
+
+
         :param tool_names: A list of tool names. To pull the Tool Description for.
         :type team_name: List[str]
-        :return: A list of ToolDescriptio objects based on the names provided, returns [] on error
+
+        :return: A list of ToolDescriptio objects based on the names provided, returns [] on error \
         or none foundd.
         :rtype: List[ToolDescription]
         """

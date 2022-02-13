@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>connection package &mdash; pwnboard2.0 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> pwnboard2.0
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">connection package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#connection-connection-module">connection.connection module</a></li>
+<li><a class="reference internal" href="#connection-test-module">connection.test module</a></li>
+<li><a class="reference internal" href="#module-connection">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pwnboard2.0</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>connection package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/connection.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="connection-package">
+<h1>connection package<a class="headerlink" href="#connection-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="connection.models.html">connection.models package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="connection.models.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connection.models.html#connection-models-host-module">connection.models.host module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connection.models.html#connection-models-tool-module">connection.models.tool module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connection.models.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="connection-connection-module">
+<h2>connection.connection module<a class="headerlink" href="#connection-connection-module" title="Permalink to this headline"></a></h2>
+</section>
+<section id="connection-test-module">
+<h2>connection.test module<a class="headerlink" href="#connection-test-module" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-connection">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-connection" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="connection.MongoConnection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">connection.</span></span><span class="sig-name descname"><span class="pre">MongoConnection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mongodb_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pwnboard'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mongodb_host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'127.0.0.1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mongodb_port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">27017</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#connection.MongoConnection" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class manages provides a layer of abstraction between the database
+and the web application. This calss provides functions to create and query
+database resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mongodb_db</strong> (<em>str</em><em>, </em><em>optional</em>) – The collection mongodb should use, defaults to pwnboard</p></li>
+<li><p><strong>mongodb_host</strong> (<em>str</em><em>, </em><em>optional</em>) – The host mongodb is running on, defaults to 127.0.0.1</p></li>
+<li><p><strong>mongodb_port</strong> (<em>str</em><em>, </em><em>optional</em>) – The port mongodb is listening on, defaults to 27017</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.BuildBoard">
+<span class="sig-name descname"><span class="pre">BuildBoard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">board</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.host.Host</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.BuildBoard" title="Permalink to this definition"></a></dt>
+<dd><p>Takes in a list of dictionaries defining the board. Modeled after the paragon         board. Example board:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hulto - web-server&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;primaryIP&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;os&quot;</span><span class="p">:</span> <span class="s2">&quot;LINUX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;serviceGroup&quot;</span><span class="p">:</span> <span class="s2">&quot;web-server&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;teamName&quot;</span><span class="p">:</span> <span class="s2">&quot;Hulto&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span> <span class="s2">&quot;Web&quot;</span><span class="p">,</span> <span class="s2">&quot;HTTP&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hulto  - mail-server&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;primaryIP&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;os&quot;</span><span class="p">:</span> <span class="s2">&quot;LINUX&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;serviceGroup&quot;</span><span class="p">:</span> <span class="s2">&quot;mail-server&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;teamName&quot;</span><span class="p">:</span> <span class="s2">&quot;Hulto&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span> <span class="s2">&quot;mail&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>board</strong> (<em>List</em><em>[</em><em>Host</em><em>]</em>) – A list of JSON dictionaries The primaryIP, serviceGroup, and teamName fields         are required others can be used as the need arises.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The board we just built as a List of Host objects, An empty [] will be returned on         error or an exception will be raisedd</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Host]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.CreateToolDescription">
+<span class="sig-name descname"><span class="pre">CreateToolDescription</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">poc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#connection.MongoConnection.CreateToolDescription" title="Permalink to this definition"></a></dt>
+<dd><p>Create a tool description object and save it to the DB. Tool Descriptions help users
+better identify and use tools when working with pwnboard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_name</strong> – The name of your tool.</p></li>
+<li><p><strong>poc</strong> (<em>str</em>) – The point of contact for the tool used for questions, and trouble shooting.</p></li>
+<li><p><strong>usage</strong> (<em>str</em>) – Basic usage instructions to describe what your tool does and how to use it.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetActiveToolHosts">
+<span class="sig-name descname"><span class="pre">GetActiveToolHosts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.host.Host</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.GetActiveToolHosts" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for hosts that have a tool installed and have seen it within timeout_seconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_names</strong> – A list of tool names. If a callback has been seen and is within         <cite>timeout_seconds</cite> seconds that host will be returned. <cite>[“goofkit”,”reptile”]</cite></p></li>
+<li><p><strong>timeout_seconds</strong> (<em>int</em>) – The number of seconds before a tool is counted as timed out.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of hosts belonging to the requested tools and within the request timeout,         returns [] on error or none foundd.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Host]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetBoard">
+<span class="sig-name descname"><span class="pre">GetBoard</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.host.Host</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.GetBoard" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the current board. Pulls all hosts form the database. This may
+eventually become cachedd in redis if performance is an issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The whole board as a List of Host objects, An empty [] will be returned on         error or an exception will be raisedd</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[Host]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetHost">
+<span class="sig-name descname"><span class="pre">GetHost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">models.host.Host</span></span></span><a class="headerlink" href="#connection.MongoConnection.GetHost" title="Permalink to this definition"></a></dt>
+<dd><p>Return Host object matched by primary_ip (the primary key for Host).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>primary_ip</strong> (<em>str</em>) – The primary_ip used by the Host.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Host object requested.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Host</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetInstalledToolHosts">
+<span class="sig-name descname"><span class="pre">GetInstalledToolHosts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.host.Host</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.GetInstalledToolHosts" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for hosts that have had a tool installed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tool_names</strong> – A list of tool names. If any have called back to pwnboard from a host         that host will be returned. <cite>[“goofkit”,”reptile”]</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of hosts belonging to the requested tools, returns [] on error or         none foundd.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Host]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetNeverActiveToolHosts">
+<span class="sig-name descname"><span class="pre">GetNeverActiveToolHosts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.host.Host</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.GetNeverActiveToolHosts" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for hosts that have never had a tool installed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tool_names</strong> – A list of tool names. If a callback has never been seen from one of         those tool/host combinations that host will be returned. <cite>[“goofkit”,”reptile”]</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of hosts belonging to the requested tools, returns [] on error or         none foundd.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Host]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetServiceHosts">
+<span class="sig-name descname"><span class="pre">GetServiceHosts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.host.Host</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.GetServiceHosts" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for hosts from specific service groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>service_group</strong> – A list of service groups to pull hosts from. <cite>[“web-server”,”ssh-server”]</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of hosts belonging to the requested service groups, returns [] on error or         none found.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Host]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetTeamHosts">
+<span class="sig-name descname"><span class="pre">GetTeamHosts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.host.Host</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.GetTeamHosts" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for hosts from specific teams.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>team_name</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of team names to pull hosts from. <cite>[“Hulto”,”squidli”]</cite></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of hosts belonging to the requested teams, returns [] on error or none foundd.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Host]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetTimedOutToolHosts">
+<span class="sig-name descname"><span class="pre">GetTimedOutToolHosts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.host.Host</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.GetTimedOutToolHosts" title="Permalink to this definition"></a></dt>
+<dd><p>Filter for hosts that have a tool installed but haven’t see it in timeout_seconds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tool_names</strong> – A list of tool names. If a callback has been seen before but not within         the last <cite>tool_names</cite> seconds that host will be returned. <cite>[“goofkit”,”reptile”]</cite></p></li>
+<li><p><strong>timeout_seconds</strong> (<em>int</em>) – The number of seconds before a tool is counted as timed out.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of hosts belonging to the requested tools and outside the request timeout,         returns [] on error or none foundd.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Host]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.GetToolDescription">
+<span class="sig-name descname"><span class="pre">GetToolDescription</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">models.tool.ToolDescription</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#connection.MongoConnection.GetToolDescription" title="Permalink to this definition"></a></dt>
+<dd><p>Get the description objects of multiple tools given a list of tool names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tool_names</strong> – A list of tool names. To pull the Tool Description for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of ToolDescriptio objects based on the names provided, returns [] on error         or none foundd.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[ToolDescription]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.RegisterCallback">
+<span class="sig-name descname"><span class="pre">RegisterCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#connection.MongoConnection.RegisterCallback" title="Permalink to this definition"></a></dt>
+<dd><p>Registers a callback for a tool against an IP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>primary_ip</strong> (<em>str</em>) – The primary IP used by the host.</p></li>
+<li><p><strong>tool_name</strong> (<em>str</em>) – The name of the being recorded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The total number of beacons recived for that tool/ip combination.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.WipeCollection">
+<span class="sig-name descname"><span class="pre">WipeCollection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#connection.MongoConnection.WipeCollection" title="Permalink to this definition"></a></dt>
+<dd><p>Delete the Host and ToolDescription collections. Mostly used for testing
+should not be used mid event.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="connection.MongoConnection.conn">
+<span class="sig-name descname"><span class="pre">conn</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#connection.MongoConnection.conn" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.createHost">
+<span class="sig-name descname"><span class="pre">createHost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_ip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fqdn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">os</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">team_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">service_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">models.host.Host</span></span></span><a class="headerlink" href="#connection.MongoConnection.createHost" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new Host object and save it to the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>primary_ip</strong> (<em>str</em>) – The primary_ip used by the Host.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – A common name used to describe the host.</p></li>
+<li><p><strong>fqdn</strong> (<em>str</em>) – The fully qualified domain name used by the host.</p></li>
+<li><p><strong>os</strong> (<em>str</em>) – The os the host is running.</p></li>
+<li><p><strong>team_name</strong> (<em>str</em>) – The team the host belongs to.</p></li>
+<li><p><strong>service_group</strong> – The service_group the host belongs to.</p></li>
+<li><p><strong>tags</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Additional tags to identify the host.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Host object created.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Host</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.createHostDict">
+<span class="sig-name descname"><span class="pre">createHostDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hostdict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">models.host.Host</span></span></span><a class="headerlink" href="#connection.MongoConnection.createHostDict" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new Host object. Derived from a dictionary or
+loaded JSON.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hulto - web-server&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;primaryIP&quot;</span><span class="p">:</span> <span class="s2">&quot;10.0.0.1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;os&quot;</span><span class="p">:</span> <span class="s2">&quot;LINUX&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;serviceGroup&quot;</span><span class="p">:</span> <span class="s2">&quot;web-server&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;teamName&quot;</span><span class="p">:</span> <span class="s2">&quot;Hulto&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Linux&quot;</span><span class="p">,</span> <span class="s2">&quot;Web&quot;</span><span class="p">,</span> <span class="s2">&quot;HTTP&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hostdict</strong> (<em>dict</em>) – The structure defining the Host.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Host object createdd.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Host</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="connection.MongoConnection.createTool">
+<span class="sig-name descname"><span class="pre">createTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tool_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">models.tool.Tool</span></span></span><a class="headerlink" href="#connection.MongoConnection.createTool" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a new Tool object given the name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tool_name</strong> (<em>str</em>) – The name of the being recorded.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Tool object created.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Hulto &amp; Squidli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
