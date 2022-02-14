@@ -15,8 +15,8 @@ import sys
 #
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath('../../api/connection'))
-sys.path.insert(0, os.path.abspath('../../api/connection/model'))
+sys.path.insert(0, os.path.abspath('../../../api/connection'))
+sys.path.insert(0, os.path.abspath('../../../api/connection/model'))
 
 # -- Project information -----------------------------------------------------
 

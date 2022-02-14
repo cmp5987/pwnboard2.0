@@ -15,6 +15,12 @@ def json_error(err_msg: str) -> dict:
     res['error'] = err_msg
     return json.dumps(res)
 
+
+def json_sucess(err_msg: str) -> dict:
+    res = {}
+    res['sucess'] = err_msg
+    return json.dumps(res)
+
 ## Board setup ###
 
 
@@ -42,27 +48,47 @@ async def getboard(request):
 
 
 @routes.post('/settooldesc')
-async def setboard(request):
+async def settooldescription(request):
     """
     """
     body = await request.text()
-    jsondDoc = json.loads(body)
-    _ = db.BuildBoard(jsondDoc)
-    board = db.GetBoardDict()
-    return web.Response(text=json.dumps(board))
+    try:
+        jsondDoc = json.loads(body)
+    except Exception as e:
+        return web.HTTPInternalServerError(text=json_error(f'{e}'))
+    if 'toolname' in jsondDoc and 'poc' in jsondDoc and 'usage' in jsondDoc:
+        db.CreateToolDescription(
+            tool_name=jsondDoc['toolname'],
+            poc=jsondDoc['poc'],
+            usage=jsondDoc['usage'],
+        )
+    else:
+        return web.HTTPInternalServerError(text=json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))
+    return web.Response(text=json_sucess('Tool created.'))
 
 
 @ routes.get('/gettooldesc')
-async def getboard(request):
+async def gettooldescription(request):
     """
     curl localhost:5000/getboard
     """
     if 'toolnames' in request.rel_url.query.keys():
         toolnames = list(request.rel_url.query['toolnames'].split(","))
+        tooldesc = db.GetToolDescription(toolnames)
+    else:
+        return web.HTTPInternalServerError(text=json_error('toolnames cannot be absent'))
+
     return web.Response(text=json.dumps(board))
 
+### Callback ###
+
+
+@ routes.get('/generic')
+async def callback(request):
+    return 1
 
 ### Filtering ###
+
 
 @ routes.get('/filter')
 async def filter(request):
