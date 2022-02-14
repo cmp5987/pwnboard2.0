@@ -1,0 +1,133 @@
+components:
+  #-------------------------------
+  # Reusable schemas (data models)
+  #-------------------------------
+  schemas:
+    BoardInit: # Can be referenced as '#/components/schemas/BoardInit'
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          primaryIP:
+            type: string
+          os:
+            type: string
+          serviceGroup:
+            type: string
+          teamName:
+            type: string
+          tags:
+            type: array
+            items:
+              type: string
+
+    Board: # Can be referenced as '#/components/schemas/Board'
+      type: array
+      items:
+        $ref: "#/components/schemas/Host"
+
+    Host:
+      type: object
+      properties:
+        name:
+          type: string
+        primaryIP:
+          type: string
+        os:
+          type: string
+        serviceGroup:
+          type: string
+        teamName:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        tools:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tool"
+
+    Tool:
+      type: object
+      properties:
+        tool_name:
+          type: string
+        lastseen:
+          type: string
+        firstseen:
+          type: string
+        totalbeacons:
+          type: string
+
+    ToolDescription:
+      type: object
+      properties:
+        tool_name:
+          type: string
+        poc:
+          type: string
+        usage:
+          type: string
+
+    Callback:
+      type: object
+      properties:
+        type:
+          type: string
+        ip:
+          type: string
+
+    Response: # Can be referenced as '#/components/schemas/Error'
+      type: object
+      properties:
+        code:
+          type: string #error ||  success
+        message:
+          type: string
+  #-------------------------------
+  # Reusable operation parameters
+  #-------------------------------
+  parameters:
+    offsetParam: # Can be referenced via '#/components/parameters/offsetParam'
+      name: offset
+      in: query
+      description: Number of items to skip before returning the results.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+    limitParam: # Can be referenced as '#/components/parameters/limitParam'
+      name: limit
+      in: query
+      description: Maximum number of items to return.
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+  #-------------------------------
+  # Reusable responses
+  #-------------------------------
+  responses:
+    404NotFound: # Can be referenced as '#/components/responses/404NotFound'
+      description: The specified resource was not found.
+    ImageResponse: # Can be referenced as '#/components/responses/ImageResponse'
+      description: An image.
+      content:
+        image/*:
+          schema:
+            type: string
+            format: binary
+    GenericError: # Can be referenced as '#/components/responses/GenericError'
+      description: An error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

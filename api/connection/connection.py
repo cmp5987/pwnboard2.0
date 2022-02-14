@@ -406,7 +406,7 @@ class MongoConnection():
                 toolDesc.usage = usage
         toolDesc.save()
 
-    def GetToolDescription(self, tool_names: List[str]) -> List[ToolDescription]:
+    def GetToolDescription(self, tool_names: List[str]) -> List[dict]:
         """Get the description objects of multiple tools given a list of tool names.
 
 
@@ -420,7 +420,7 @@ class MongoConnection():
         toolDescs = []
         for toolDesc in ToolDescription.objects(
                 tool_name__in=tool_names):
-            toolDescs.append(toolDesc)
+            toolDescs.append(toolDesc.toDict())
         return toolDescs
 
     def Filter(self, teams: List[str], service_groups: List[str], oses: List[str],

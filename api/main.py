@@ -2,6 +2,7 @@ import json
 from distutils.log import debug
 
 from aiohttp import web
+from aiohttp_swagger3 import SwaggerDocs, SwaggerUiSettings
 
 from connection.connection import MongoConnection
 
@@ -27,7 +28,27 @@ def json_sucess(err_msg: str) -> dict:
 @routes.post('/setboard')
 async def setboard(request):
     """
-    curl -X POST http://localhost:5000/setboard -H 'Content-Type: application/json' -d '[{"name": "Hulto - web-server", "primaryIP": "10.0.0.1", "os": "LINUX", "serviceGroup": "web-server", "teamName": "Hulto", "tags": ["Linux", "Web", "HTTP"]}, {"name": "Hulto  - mail-server", "primaryIP": "10.0.0.2", "os": "LINUX", "serviceGroup": "mail-server", "teamName": "Hulto", "tags": ["Linux", "mail"]}, {"name": "Hulto  - ssh-server", "primaryIP": "10.0.0.3", "os": "LINUX", "serviceGroup": "ssh-server", "teamName": "Hulto", "tags": ["Linux", "ssh"]}, {"name": "squidli  - web-server", "primaryIP": "10.0.1.1", "os": "LINUX", "serviceGroup": "web-server", "teamName": "squidli", "tags": ["Linux", "Web", "HTTP"]}, {"name": "squidli  - mail-server", "primaryIP": "10.0.1.2", "os": "LINUX", "serviceGroup": "mail-server", "teamName": "squidli", "tags": ["Linux", "mail"]}, {"name": "squidli  - ssh-server", "primaryIP": "10.0.1.3", "os": "LINUX", "serviceGroup": "ssh-server", "teamName": "squidli", "tags": ["Linux", "ssh"]}]'
+    Create board a for event.
+    The board will represent all the hosts.
+    ---
+    summary: Create a board for the event.
+    tags:
+      - Board
+    requestBody:
+      description: List of host dictionaries to define board state.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BoardInit'
+
+    responses:
+      '200':
+        description: Expected response to a valid request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Board'
     """
     body = await request.text()
     jsondDoc = json.loads(body)
@@ -36,20 +57,55 @@ async def setboard(request):
     return web.Response(text=json.dumps(board))
 
 
-@ routes.get('/getboard')
+# @ routes.get('/getboard')
 async def getboard(request):
     """
-    curl localhost:5000/getboard
+    Get current board a for event.
+    The board will represent all the hosts.
+    ---
+    summary: Get board for the event.
+    tags:
+      - Board
+
+    responses:
+      '200':
+        description: Expected response to a valid request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Board'
     """
     board = db.GetBoardDict()
     return web.Response(text=json.dumps(board))
 
 ### Tool desription registration ###
 
+# @routes.post('/settooldesc')
 
-@routes.post('/settooldesc')
+
 async def settooldescription(request):
     """
+    Create a tool description.
+    This is used by users to better understand what a tool does and how to use it.
+    ---
+    summary: Create a tool description.
+    tags:
+      - ToolDescription
+    requestBody:
+      description: JSON document to describe tool.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ToolDescription'
+
+    responses:
+      '200':
+        description: Expected response to a valid request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Response'
     """
     body = await request.text()
     try:
@@ -67,10 +123,32 @@ async def settooldescription(request):
     return web.Response(text=json_sucess('Tool created.'))
 
 
-@ routes.get('/gettooldesc')
+# @ routes.get('/gettooldesc')
 async def gettooldescription(request):
     """
-    curl localhost:5000/getboard
+    Get a list or single tool descriptions
+    This is used by users to better understand what a tool does and how to use it.
+    ---
+    summary: Get a list or single tool descriptions
+    tags:
+      - ToolDescription
+    parameters:
+      - in: query
+        name: toolnames
+        schema:
+          type: array
+          items:
+            type: string
+        required: true
+        description: The name or list of names of the tool(s) to query.
+
+    responses:
+      '200':
+        description: Expected response to a valid request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Response'
     """
     if 'toolnames' in request.rel_url.query.keys():
         toolnames = list(request.rel_url.query['toolnames'].split(","))
@@ -78,20 +156,103 @@ async def gettooldescription(request):
     else:
         return web.HTTPInternalServerError(text=json_error('toolnames cannot be absent'))
 
-    return web.Response(text=json.dumps(board))
+    return web.Response(text=json.dumps(tooldesc))
 
 ### Callback ###
 
 
-@ routes.get('/generic')
+# @ routes.get('/generic')
 async def callback(request):
+    """
+    Callback for agents to hit identifying them as still active.
+    ---
+    summary: Callback for agents to hit identifying them as still active.
+    tags:
+      - Callback
+    requestBody:
+      description: JSON document to describe callback activity.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Callback'
+
+    responses:
+      '200':
+        description: Expected response to a valid request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Response'
+    """
     return 1
 
 ### Filtering ###
 
 
-@ routes.get('/filter')
-async def filter(request):
+# @ routes.get('/filter')
+async def filter(request: web.Request) -> web.Response:
+    """
+    Filter for specific hosts based on a numebr of fields.
+    ---
+    summary: Filter for specific hosts based on a numebr of fields.
+    tags:
+      - Filter
+    parameters:
+      - in: query
+        name: teams
+        schema:
+          type: array
+          items:
+            type: string
+        required: false
+        description: The name or list of names of the team(s) to query.
+      - in: query
+        name: service_groups
+        schema:
+          type: array
+          items:
+            type: string
+        required: false
+        description: The name or list of names of the service_group(s) to query.
+      - in: query
+        name: oses
+        schema:
+          type: array
+          items:
+            type: string
+        required: false
+        description: The name or list of names of the os(es) to query.
+      - in: query
+        name: tool_names
+        schema:
+          type: array
+          items:
+            type: string
+        required: false
+        description: The name or list of names of the tool_name(s) to query.
+      - in: query
+        name: tool_match
+        schema:
+          type: string
+        required: false
+        description: The type of tool matching to do. (active, inactive, installed, never)
+      - in: query
+        name: timeout
+        schema:
+          type: integer
+        required: false
+        description: The number of seconds to consider a callback timedout.
+
+    responses:
+      '200':
+        description: Expected response to a valid request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Response'
+    """
+
     teams = service_groups = oses = tool_names = []
     tool_match = "active"  # never, inactive
     timeout = 480
@@ -127,5 +288,20 @@ async def filter(request):
 if __name__ == '__main__':
     db = MongoConnection()
     app = web.Application()
-    app.add_routes(routes)
+    # app.add_routes(routes)
+    swagger = SwaggerDocs(
+        app,
+        swagger_ui_settings=SwaggerUiSettings(path="/docs/"),
+        title="Swagger pwnbord",
+        version="1.0.0",
+        components="./docs/components.yaml"
+    )
+    swagger.add_routes([
+        web.get("/filter", filter, allow_head=False),
+        web.post("/setboard", setboard),
+        web.get("/getboard", getboard, allow_head=False),
+        web.post("/settooldesc", settooldescription),
+        web.get("/gettooldesc", gettooldescription, allow_head=False),
+        web.post("/generic", callback),
+    ])
     web.run_app(app, port=5000)

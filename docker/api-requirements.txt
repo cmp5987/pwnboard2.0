@@ -8,3 +8,4 @@ Sphinx==4.4.0
 aiofiles==0.8.0
 aiohttp==3.8.1
 aiosignal==1.2.0
+aiohttp-swagger3==0.7.1
