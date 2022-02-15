@@ -22,10 +22,15 @@ def json_sucess(err_msg: str) -> dict:
     res['sucess'] = err_msg
     return json.dumps(res)
 
+# redirect api hits to / to docs.
+
+
+async def givedocs(request):
+    raise web.HTTPFound('/docs')
+
 ## Board setup ###
 
 
-@routes.post('/setboard')
 async def setboard(request):
     """
     Create board a for event.
@@ -57,7 +62,6 @@ async def setboard(request):
     return web.Response(text=json.dumps(board))
 
 
-# @ routes.get('/getboard')
 async def getboard(request):
     """
     Get current board a for event.
@@ -79,8 +83,6 @@ async def getboard(request):
     return web.Response(text=json.dumps(board))
 
 ### Tool desription registration ###
-
-# @routes.post('/settooldesc')
 
 
 async def settooldescription(request):
@@ -123,7 +125,6 @@ async def settooldescription(request):
     return web.Response(text=json_sucess('Tool created.'))
 
 
-# @ routes.get('/gettooldesc')
 async def gettooldescription(request):
     """
     Get a list or single tool descriptions
@@ -161,7 +162,6 @@ async def gettooldescription(request):
 ### Callback ###
 
 
-# @ routes.get('/generic')
 async def callback(request):
     """
     Callback for agents to hit identifying them as still active.
@@ -185,12 +185,24 @@ async def callback(request):
             schema:
               $ref: '#/components/schemas/Response'
     """
-    return 1
+    body = await request.text()
+    try:
+        jsondDoc = json.loads(body)
+    except Exception as e:
+        return web.HTTPInternalServerError(text=json_error(f'{e}'))
+    if 'toolname' in jsondDoc and 'poc' in jsondDoc and 'usage' in jsondDoc:
+        db.CreateToolDescription(
+            tool_name=jsondDoc['toolname'],
+            poc=jsondDoc['poc'],
+            usage=jsondDoc['usage'],
+        )
+    else:
+        return web.HTTPInternalServerError(text=json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))
+    return web.Response(text=json_sucess('Tool created.'))
 
 ### Filtering ###
 
 
-# @ routes.get('/filter')
 async def filter(request: web.Request) -> web.Response:
     """
     Filter for specific hosts based on a numebr of fields.
@@ -297,6 +309,7 @@ if __name__ == '__main__':
         components="./docs/components.yaml"
     )
     swagger.add_routes([
+        web.get("/", givedocs, allow_head=False),
         web.get("/filter", filter, allow_head=False),
         web.post("/setboard", setboard),
         web.get("/getboard", getboard, allow_head=False),
