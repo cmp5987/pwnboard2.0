@@ -300,7 +300,6 @@ async def filter(request: web.Request) -> web.Response:
 if __name__ == '__main__':
     db = MongoConnection()
     app = web.Application()
-    # app.add_routes(routes)
     swagger = SwaggerDocs(
         app,
         swagger_ui_settings=SwaggerUiSettings(path="/docs/"),
