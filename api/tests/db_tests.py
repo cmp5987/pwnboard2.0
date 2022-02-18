@@ -3,10 +3,8 @@ from time import sleep
 
 import pytest
 
-if __package__ is None or __package__ == '':
-    from connection import MongoConnection
-else:
-    from connection.connection import MongoConnection
+sys.path.append('./')  # noqa
+from connection.connection import MongoConnection  # noqa
 
 
 def test_wipe_db():
@@ -20,50 +18,50 @@ def test_build_board():
     board = [
         {
             "name": "Hulto - web-server",
-            "primaryIP": "10.0.0.1",
+            "primary_ip": "10.0.0.1",
             "os": "LINUX",
-            "serviceGroup": "web-server",
-            "teamName": "Hulto",
+            "service_group": "web-server",
+            "team_name": "Hulto",
             "tags": ["Linux", "Web", "HTTP"]
         },
         {
             "name": "Hulto  - mail-server",
-            "primaryIP": "10.0.0.2",
+            "primary_ip": "10.0.0.2",
             "os": "Windows",
-            "serviceGroup": "mail-server",
-            "teamName": "Hulto",
+            "service_group": "mail-server",
+            "team_name": "Hulto",
             "tags": ["Windows", "mail"]
         },
         {
             "name": "Hulto  - ssh-server",
-            "primaryIP": "10.0.0.3",
+            "primary_ip": "10.0.0.3",
             "os": "LINUX",
-            "serviceGroup": "ssh-server",
-            "teamName": "Hulto",
+            "service_group": "ssh-server",
+            "team_name": "Hulto",
             "tags": ["Linux", "ssh"]
         },
         {
             "name": "squidli  - web-server",
-            "primaryIP": "10.0.1.1",
+            "primary_ip": "10.0.1.1",
             "os": "LINUX",
-            "serviceGroup": "web-server",
-            "teamName": "squidli",
+            "service_group": "web-server",
+            "team_name": "squidli",
             "tags": ["Linux", "Web", "HTTP"]
         },
         {
             "name": "squidli  - mail-server",
-            "primaryIP": "10.0.1.2",
+            "primary_ip": "10.0.1.2",
             "os": "Windows",
-            "serviceGroup": "mail-server",
-            "teamName": "squidli",
+            "service_group": "mail-server",
+            "team_name": "squidli",
             "tags": ["Windows", "mail"]
         },
         {
             "name": "squidli  - ssh-server",
-            "primaryIP": "10.0.1.3",
+            "primary_ip": "10.0.1.3",
             "os": "LINUX",
-            "serviceGroup": "ssh-server",
-            "teamName": "squidli",
+            "service_group": "ssh-server",
+            "team_name": "squidli",
             "tags": ["Linux", "ssh"]
         }
     ]
@@ -90,7 +88,7 @@ def test_query_multiple_team():
         assert('10.0.' in host.primary_ip)
 
 
-def test_query_servicegroup():
+def test_query_service_group():
     myconn = MongoConnection()
     hosts = myconn.GetServiceHosts(["web-server"])
     assert(len(set(hosts)) == 2)
@@ -98,7 +96,7 @@ def test_query_servicegroup():
         assert(".1" in host.primary_ip[-2:])
 
 
-def test_query_multiple_servicegroup():
+def test_query_multiple_service_group():
     myconn = MongoConnection()
     hosts = myconn.GetServiceHosts(["web-server", "mail-server"])
     assert(len(set(hosts)) == 4)
@@ -209,9 +207,9 @@ if __name__ == '__main__':
     print(
         f"TEST test_query_multiple_team():      {test_query_multiple_team()}")
     print(
-        f"TEST test_query_servicegroup():       {test_query_servicegroup()}")
+        f"TEST test_query_service_group():       {test_query_service_group()}")
     print(
-        f"TEST test_query_multi_servicegroup(): {test_query_multiple_servicegroup()}")
+        f"TEST test_query_multi_service_group(): {test_query_multiple_service_group()}")
 
     print(
         f"TEST test_callback():                 {test_callback()}")
