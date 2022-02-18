@@ -46,31 +46,31 @@ class MongoConnection():
         Host.drop_collection()
         ToolDescription.drop_collection()
 
-    def BuildBoard(self, board: list) -> List[Host]:
+    def BuildBoard(self, board: list, retry=True) -> List[Host]:
         """Takes in a list of dictionaries defining the board. Modeled after the paragon \
         board. Example board:
         ::
             [
                 {
                     "name": "Hulto - web-server",
-                    "primaryIP": "10.0.0.1",
+                    "primary_ip": "10.0.0.1",
                     "os": "LINUX",
-                    "serviceGroup": "web-server",
-                    "teamName": "Hulto",
+                    "service_group": "web-server",
+                    "team_name": "Hulto",
                     "tags": ["Linux", "Web", "HTTP"]
                 },
                 {
                     "name": "Hulto  - mail-server",
-                    "primaryIP": "10.0.0.2",
+                    "primary_ip": "10.0.0.2",
                     "os": "LINUX",
-                    "serviceGroup": "mail-server",
-                    "teamName": "Hulto",
+                    "service_group": "mail-server",
+                    "team_name": "Hulto",
                     "tags": ["Linux", "mail"]
                 },
             ]
 
 
-        :param board: A list of JSON dictionaries The primaryIP, serviceGroup, and teamName fields \
+        :param board: A list of JSON dictionaries The primary_ip, service_group, and team_name fields \
         are required others can be used as the need arises.
         :type board: List[Host]
 
@@ -78,10 +78,16 @@ class MongoConnection():
         error or an exception will be raisedd
         :rtype: List[Host]
         """
-        Host.drop_collection()
-        boardobjs = []
-        for host in board:
-            boardobjs.append(self.createHostDict(host))
+        backup = self.GetBoard()
+        try:
+            Host.drop_collection()
+            boardobjs = []
+            for host in board:
+                boardobjs.append(self.createHostDict(host))
+        except Exception as e:
+            if retry:
+                self.BuildBoard(backup, retry=False)
+            raise e
         return boardobjs
 
     def GetBoard(self) -> List[Host]:
@@ -134,10 +140,10 @@ class MongoConnection():
         ::
             {
                 "name": "Hulto - web-server",
-                "primaryIP": "10.0.0.1",
+                "primary_ip": "10.0.0.1",
                 "os": "LINUX",
-                "serviceGroup": "web-server",
-                "teamName": "Hulto",
+                "service_group": "web-server",
+                "team_name": "Hulto",
                 "tags": ["Linux", "Web", "HTTP"]
             }
 
@@ -150,24 +156,24 @@ class MongoConnection():
         """
         if not isinstance(hostdict, dict):
             raise Exception(f"Expected dictionary recived {type(hostdict)}")
-        if 'primaryIP' not in hostdict.keys() or \
-            'serviceGroup' not in hostdict.keys() or \
-                'teamName' not in hostdict.keys():
+        if 'primary_ip' not in hostdict.keys() or \
+            'service_group' not in hostdict.keys() or \
+                'team_name' not in hostdict.keys():
             raise Exception(
-                "Required fields not provided:\nprimaryIP, serviceGroup, team_name")
+                "Required fields not provided:\primary_ip, service_group, team_name")
         newhost = None
         try:
-            newhost = self.GetHost(hostdict['primaryIP'])
+            newhost = self.GetHost(hostdict['primary_ip'])
         except Exception as e:
             if "does not exist yet." not in str(e):
                 raise e
         if newhost is None:
             newhost = self.createHost(
-                primary_ip=hostdict['primaryIP'],
-                team_name=hostdict['teamName'],
-                service_group=hostdict['serviceGroup'],
+                primary_ip=hostdict['primary_ip'],
+                team_name=hostdict['team_name'],
+                service_group=hostdict['service_group'],
                 name=hostdict.get(
-                    'name', f"{hostdict['teamName']} - {hostdict['serviceGroup']}"),
+                    'name', f"{hostdict['team_name']} - {hostdict['service_group']}"),
                 fqdn=hostdict.get('fqdn', 'notset'),
                 os=hostdict.get('os', 'notset'),
                 tags=hostdict.get('tags', [])

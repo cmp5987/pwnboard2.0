@@ -4,8 +4,9 @@ from distutils.log import debug
 from typing import List
 from urllib.request import Request
 from uuid import uuid4
+from xmlrpc.client import ResponseError
 
-from aiohttp import request, web
+from aiohttp import web
 from aiohttp_swagger3 import SwaggerDocs, SwaggerUiSettings
 
 from connection.connection import MongoConnection
@@ -20,6 +21,7 @@ class API():
     port = 5000
     debug = False
     bind_host = "0.0.0.0"
+    docs_path = "/docs/"
 
     def __init__(self, port: int = 5000, bind_host: str = "0.0.0.0",
                  debug: bool = False, redirect_url: str = "https://cdn.akamai.steamstatic.com"):
@@ -30,6 +32,8 @@ class API():
         self.db, self.app, self.swagger = self.init_app()
 
     def start(self):
+        print(
+            f"Docs availabel at: http://{self.bind_host}:{self.port}{self.docs_path}")
         web.run_app(self.app, port=self.port, host=self.bind_host)
 
     def json_error(self, err_msg: str) -> dict:
@@ -44,7 +48,7 @@ class API():
 
     # redirect api hits to / to docs.
 
-    async def givedocs(self, request):
+    async def givedocs(self) -> web.Response:
         if self.debug:
             raise web.HTTPFound('/docs')
         else:
@@ -52,7 +56,7 @@ class API():
 
     ## Board setup ###
 
-    async def setboard(self, request):
+    async def setboard(self, request: web.Request) -> web.Response:
         """
         Create board a for event.
         The board will represent all the hosts.
@@ -76,13 +80,16 @@ class API():
                 schema:
                   $ref: '#/components/schemas/Board'
         """
-        body = await request.text()
-        jsondDoc = json.loads(body)
-        _ = self.db.BuildBoard(jsondDoc)
-        board = self.db.GetBoardDict()
-        return web.Response(text=json.dumps(board))
+        try:
+            body = await request.text()
+            jsondDoc = json.loads(body)
+            _ = self.db.BuildBoard(jsondDoc)
+            board = self.db.GetBoardDict()
+            return web.Response(text=json.dumps(board))
+        except Exception as e:
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
-    async def getboard(self, request):
+    async def getboard(self, request: web.Request) -> web.Response:
         """
         Get current board a for event.
         The board will represent all the hosts.
@@ -104,7 +111,7 @@ class API():
 
     ### Tool desription registration ###
 
-    async def settooldescription(self, request):
+    async def settooldescription(self, request: web.Request) -> web.Response:
         """
         Create a tool description.
         This is used by users to better understand what a tool does and how to use it.
@@ -143,7 +150,7 @@ class API():
             return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))
         return web.Response(text=self.json_sucess('Tool created.'))
 
-    async def gettooldescription(self, request):
+    async def gettooldescription(self, request: web.Request) -> web.Response:
         """
         Get a list or single tool descriptions
         This is used by users to better understand what a tool does and how to use it.
@@ -183,43 +190,42 @@ class API():
 
     ### Callback ###
 
-    async def callback(self, request):
+    async def callback(self, request: web.Request):
         """
-        Callback for agents to hit identifying them as still active.
-        ---
-        summary: Callback for agents to hit identifying them as still active.
-        tags:
-          - Callback
-        requestBody:
-          description: JSON document to describe callback activity.
-          required: true
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Callback'
-
-        responses:
-          '200':
-            description: Expected response to a valid request
+          Callback for agents to hit identifying them as still active.
+          ---
+          summary: Callback for agents to hit identifying them as still active.
+          tags:
+            - Callback
+          requestBody:
+            description: JSON document to describe callback activity.
+            required: true
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/Response'
+                  $ref: '#/components/schemas/Callback'
+
+          responses:
+            '200':
+              description: Expected response to a valid request
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Response'
         """
         body = await request.text()
         try:
             jsondDoc = json.loads(body)
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(f'{e}'))
-        if 'toolname' in jsondDoc and 'poc' in jsondDoc and 'usage' in jsondDoc:
-            self.db.CreateToolDescription(
-                tool_name=jsondDoc['toolname'],
-                poc=jsondDoc['poc'],
-                usage=jsondDoc['usage'],
+        if 'type' in jsondDoc and 'ip' in jsondDoc:
+            self.db.RegisterCallback(
+                primary_ip=jsondDoc['ip'],
+                tool_name=jsondDoc['type']
             )
         else:
             return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))
-        return web.Response(text=self.json_sucess('Tool created.'))
+        return web.Response(text=self.json_sucess('Callback registered.'))
 
     ### Filtering ###
 
@@ -319,12 +325,11 @@ class API():
     def init_app(self):
         db = MongoConnection()
         app = web.Application()
-        docs_path = "/docs/"
         if not self.debug:
-            docs_path = f"/{uuid4()}/"
+            self.docs_path = f"/{uuid4()}/"
         swagger = SwaggerDocs(
             app,
-            swagger_ui_settings=SwaggerUiSettings(path=docs_path),
+            swagger_ui_settings=SwaggerUiSettings(path=self.docs_path),
             title="Swagger pwnbord",
             version="1.0.0",
             components="./docs/components.yaml"
@@ -342,5 +347,5 @@ class API():
 
 
 if __name__ == '__main__':
-    pwnboardAPI = API(debug=True)
+    pwnboardAPI = API(debug=False)
     pwnboardAPI.start()
