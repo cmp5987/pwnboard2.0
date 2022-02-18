@@ -32,3 +32,10 @@ class ToolDescription(Document):
     tool_name = StringField(required=True, unique=True)
     poc = StringField()
     usage = StringField()
+
+    def toDict(self):
+        return {
+            'tool_name': self.tool_name,
+            'poc': self.poc,
+            'usage': self.usage
+        }

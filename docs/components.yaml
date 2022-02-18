@@ -65,7 +65,7 @@ components:
     ToolDescription:
       type: object
       properties:
-        tool_name:
+        toolname:
           type: string
         poc:
           type: string
