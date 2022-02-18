@@ -1,6 +1,8 @@
 import sys
 from time import sleep
 
+import pytest
+
 if __package__ is None or __package__ == '':
     from connection import MongoConnection
 else:
@@ -67,130 +69,96 @@ def test_build_board():
     ]
     _ = myconn.BuildBoard(board)
     board = myconn.GetBoard()
-    if len(set(board)) != 6:
-        return False
+    assert(len(set(board)) == 6)
     for host in board:
-        if '10.0.' not in host.primary_ip:
-            return False
-    return True
+        assert('10.0.' in host.primary_ip)
 
 
 def test_query_team():
     myconn = MongoConnection()
     hosts = myconn.GetTeamHosts(["Hulto"])
-    if len(set(hosts)) != 3:
-        # raise Exception(f"Incorrect number of hosts:\n{len(set(hosts))}/3")
-        return False
+    assert(len(set(hosts)) == 3)
     for host in hosts:
-        if "10.0.0." not in host.primary_ip:
-            # raise Exception(
-            #     f"Incorrect primary_ip {host.primary_ip}\nExpected 10.0.0.X")
-            return False
-    return True
+        assert("10.0.0." in host.primary_ip)
 
 
 def test_query_multiple_team():
     myconn = MongoConnection()
     hosts = myconn.GetTeamHosts(["Hulto", "squidli"])
-    if len(set(hosts)) != 6:
-        return False
-        # raise Exception(f"Incorrect number of hosts:\n{len(set(hosts))}/6")
+    assert(len(set(hosts)) == 6)
     for host in hosts:
-        if '10.0.' not in host.primary_ip:
-            return False
-            # raise Exception(
-            #     f"Incorrect primary_ip {host.primary_ip}\nExpected 10.0.0.X")
-
-    return True
+        assert('10.0.' in host.primary_ip)
 
 
 def test_query_servicegroup():
     myconn = MongoConnection()
     hosts = myconn.GetServiceHosts(["web-server"])
-    if len(set(hosts)) != 2:
-        return False
+    assert(len(set(hosts)) == 2)
     for host in hosts:
-        if ".1" not in host.primary_ip[-2:]:
-            return False
-    return True
+        assert(".1" in host.primary_ip[-2:])
 
 
 def test_query_multiple_servicegroup():
     myconn = MongoConnection()
     hosts = myconn.GetServiceHosts(["web-server", "mail-server"])
-    if len(set(hosts)) != 4:
-        return False
+    assert(len(set(hosts)) == 4)
     for host in hosts:
-        if '10.0.' not in host.primary_ip:
-            return False
-    return True
+        assert('10.0.' in host.primary_ip)
 
 
 def test_callback():
     myconn = MongoConnection()
     one = myconn.RegisterCallback("10.0.0.1", "reptile")
     two = myconn.RegisterCallback("10.0.0.1", "reptile")
-    return (two-one == 1)
+    assert(two-one == 1)
 
 
 def test_callback_update_poc():
     myconn = MongoConnection()
     one = myconn.RegisterCallback("10.0.0.1", "reptile")
     two = myconn.RegisterCallback("10.0.0.1", "reptile")
-    return (two-one == 1)
+    assert(two-one == 1)
 
 
 def test_query_active_tool():
     myconn = MongoConnection()
-    hosts = myconn.GetInstalledToolHosts(["reptile", "goofkit"])
-    if len(set(hosts)) != 1:
-        return False
+    one = myconn.RegisterCallback("10.0.0.1", "reptile")
+    two = myconn.RegisterCallback("10.0.0.1", "reptile")
+    hosts = myconn.GetActiveToolHosts(["reptile", "goofkit"], 2)
+    assert(len(set(hosts)) == 1)
     for host in hosts:
-        if host.primary_ip != "10.0.0.1":
-            return False
+        assert(host.primary_ip == "10.0.0.1")
     return True
 
 
 def test_query_never_active_tool():
     myconn = MongoConnection()
     hosts = myconn.GetNeverActiveToolHosts(["reptile", ])
-    if len(set(hosts)) != 5:
-        # return False
-        raise Exception(f"Expected 5 host got {len(set(hosts))}")
+    assert(len(set(hosts)) == 5)
     for host in hosts:
-        if host.primary_ip == "10.0.0.1":
-            # return False
-            raise Exception(f"Expected not 10.0.0.1 got {host.primary_ip}")
+        assert(host.primary_ip != "10.0.0.1")
 
     hosts = myconn.GetNeverActiveToolHosts(["goofkit"])
-    if len(set(hosts)) != 6:
-        return False
+    assert(len(set(hosts)) == 6)
     for host in hosts:
-        if '10.0.' not in host.primary_ip:
-            return False
-    return True
+        assert('10.0.' in host.primary_ip)
 
 
 def test_query_timedout_tool():
     myconn = MongoConnection()
+    sleep(2)
     hosts = myconn.GetTimedOutToolHosts(["reptile", "goofkit"], 2)
-    if len(set(hosts)) != 1:
-        return False
+    assert(len(set(hosts)) == 1)
     for host in hosts:
-        if host.primary_ip != "10.0.0.1":
-            return False
-    return True
+        assert(host.primary_ip == "10.0.0.1")
 
 
 def test_query_active_tool():
     myconn = MongoConnection()
     hosts = myconn.GetActiveToolHosts(["reptile"], 5)
-    if len(set(hosts)) != 1:
-        return False
+    assert(len(set(hosts)) == 1)
     for host in hosts:
-        if host.primary_ip != "10.0.0.1":
-            return False
-    return True
+        assert(host.primary_ip == "10.0.0.1")
 
 
 def test_create_tool_desc():
@@ -200,13 +168,10 @@ def test_create_tool_desc():
     _ = myconn.CreateToolDescription(
         tool_name="reptile", poc="Hulto", usage="/root/reptile_up")
 
-    toolDescs = myconn.GetToolDescription(["reptile", "goofkit"])
-    if len(set(toolDescs)) != 2:
-        return False
+    toolDescs = myconn.GetToolDescriptions(["reptile", "goofkit"])
+    assert(len(set(toolDescs)) == 2)
     for toolDesc in toolDescs:
-        if toolDesc.tool_name not in ["reptile", "goofkit"]:
-            return False
-    return True
+        assert(toolDesc.tool_name in ["reptile", "goofkit"])
 
 
 def test_update_tool_desc():
@@ -214,16 +179,12 @@ def test_update_tool_desc():
     _ = myconn.CreateToolDescription(
         tool_name="reptile", poc="squidli", usage="/root/reptile_up")
 
-    toolDescs = myconn.GetToolDescription(["reptile", "goofkit"])
-    if len(set(toolDescs)) != 2:
-        return False
+    toolDescs = myconn.GetToolDescriptions(["reptile", "goofkit"])
+    assert(len(set(toolDescs)) == 2)
     for toolDesc in toolDescs:
-        if toolDesc.tool_name not in ["reptile", "goofkit"]:
-            return False
+        assert(toolDesc.tool_name in ["reptile", "goofkit"])
         if toolDesc.tool_name == "reptile":
-            if toolDesc.poc != "squidli":
-                return False
-    return True
+            assert(toolDesc.poc == "squidli")
 
 
 def test_filter():
@@ -231,12 +192,14 @@ def test_filter():
     results = myconn.Filter(
         teams=["Hulto"], service_groups=["web-server"],
         oses=[], tool_names=[])
-    if len(results) != 1:
-        return False
-    if 'primary_ip' not in results[0]:
-        return False
-    if results[0]['primary_ip'] != "10.0.0.1":
-        return False
+    assert(len(results) == 1)
+    assert('primary_ip' in results[0])
+    assert(results[0]['primary_ip'] == "10.0.0.1")
+
+
+@pytest.fixture(scope="session", autouse=True)
+def execute_before_any_test():
+    test_wipe_db()
 
 
 if __name__ == '__main__':
@@ -270,4 +233,3 @@ if __name__ == '__main__':
     print(
         f"TEST test_update_tool_desc():         {test_update_tool_desc()}")
     print(f"TEST test_filter():                   {test_filter()}")
-    # test_filter()

@@ -393,7 +393,7 @@ class MongoConnection():
         :type usage: str
         """
 
-        toolDescs = self.GetToolDescription([tool_name])
+        toolDescs = self.GetToolDescriptions([tool_name])
         if len(toolDescs) == 0:
             toolDesc = ToolDescription(
                 tool_name=tool_name,
@@ -406,7 +406,7 @@ class MongoConnection():
                 toolDesc.usage = usage
         toolDesc.save()
 
-    def GetToolDescription(self, tool_names: List[str]) -> List[dict]:
+    def GetToolDescriptions(self, tool_names: List[str]) -> List[ToolDescription]:
         """Get the description objects of multiple tools given a list of tool names.
 
 
@@ -420,7 +420,7 @@ class MongoConnection():
         toolDescs = []
         for toolDesc in ToolDescription.objects(
                 tool_name__in=tool_names):
-            toolDescs.append(toolDesc.toDict())
+            toolDescs.append(toolDesc)
         return toolDescs
 
     def Filter(self, teams: List[str], service_groups: List[str], oses: List[str],
