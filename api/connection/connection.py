@@ -8,8 +8,8 @@ from mongoengine.errors import NotUniqueError
 from pymongo.errors import DuplicateKeyError
 
 if __package__ is None or __package__ == '':
-    from models.host import Host
-    from models.tool import Tool, Tool_description
+    from models.host import Host  # pragma: no cover
+    from models.tool import Tool, Tool_description  # pragma: no cover
 else:
     from connection.models.host import Host
     from connection.models.tool import Tool, Tool_description
@@ -184,8 +184,10 @@ class MongoConnection():
         try:
             newhost = self.GetHost(host_dict['primary_ip'])
         except Exception as e:
+            # If the host just doesn't exist we'll create a new one.
             if "does not exist yet." not in str(e):
-                raise e
+                # If its a different error raise it.
+                raise e  # pragma: no cover
         if newhost is None:
             newhost = self.createHost(
                 primary_ip=host_dict['primary_ip'],
@@ -524,9 +526,11 @@ class MongoConnection():
 
         if len(tool_names) > 0:
             if tool_match == "active":
-                toolSet = set(self.GetActiveToolHosts(tool_names))
+                toolSet = set(self.GetActiveToolHosts(
+                    tool_names, timeout_seconds=timeout))
             elif tool_match == "inactive":
-                toolSet = set(self.GetTimedOutToolHosts(tool_names))
+                toolSet = set(self.GetTimedOutToolHosts(
+                    tool_names, timeout_seconds=timeout))
             elif tool_match == "never":
                 toolSet = set(self.GetNeverActiveToolHosts(tool_names))
             elif tool_match == "installed":

@@ -5,8 +5,8 @@ from mongoengine import *
 
 try:
     from connection.models.tool import Tool
-except Exception as e:
-    from models.tool import Tool
+except Exception as e:  # pragma: no cover
+    from models.tool import Tool  # pragma: no cover
 
 
 class Host(Document):
