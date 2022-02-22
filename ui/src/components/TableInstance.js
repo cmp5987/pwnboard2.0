@@ -29,13 +29,6 @@ export default function TableInstance({columnData, tableData}){
     },
     [columnData, tableData]
   );
-    
-  // const [data] = useMemo(
-  //   () => {
-  //     return [tableData];
-  //   },
-  //   [tableData]
-  // );
 
   const tableInstance = useTable({ columns, data });
 

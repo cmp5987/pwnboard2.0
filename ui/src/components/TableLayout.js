@@ -24,7 +24,7 @@ return (
                  {rows.map((row, i) => {
                      prepareRow(row);
                      return (
-                        <tr {...row.getRowProps()} className="text-xs">
+                        <tr {...row.getRowProps()} className="text-sm">
                             
                             {_.map(row.values, (value) => {
                                 if(typeof value === "string"){
