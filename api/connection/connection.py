@@ -66,6 +66,12 @@ class MongoConnection():
                     "service_group": "mail-server",
                     "team_name": "Hulto",
                     "tags": ["Linux", "mail"]
+                    "tools": [{
+                        "tool_name": "reptile",
+                        "last_seen": 1645500015,
+                        "first_seen": 1645500015,
+                        "total_beacons": 1
+                    }]
                 },
             ]
 
@@ -78,8 +84,8 @@ class MongoConnection():
         error or an exception will be raisedd
         :rtype: List[Host]
         """
-        backup: List[Host]
-        backup = self.GetBoard()
+        backup: List[dict]
+        backup = self.GetBoardDict()
         try:
             Host.drop_collection()
             board_host_list = []
@@ -87,7 +93,7 @@ class MongoConnection():
                 board_host_list.append(self.createHostDict(host))
         except Exception as e:
             if retry:
-                self.BuildBoard(backup, retry=False)
+                self.BuildBoardFromDictList(backup, retry=False)
             raise e
         return board_host_list
 
@@ -152,6 +158,12 @@ class MongoConnection():
                 "service_group": "web-server",
                 "team_name": "Hulto",
                 "tags": ["Linux", "Web", "HTTP"]
+                "tools": [{
+                    "tool_name": "reptile",
+                    "last_seen": "1645500015",
+                    "first_seen": "1645500015",
+                    "total_beacons": "1",
+                }]
             }
 
 
@@ -183,13 +195,15 @@ class MongoConnection():
                     'name', f"{host_dict['team_name']} - {host_dict['service_group']}"),
                 fqdn=host_dict.get('fqdn', 'notset'),
                 os=host_dict.get('os', 'notset'),
-                tags=host_dict.get('tags', [])
+                tags=host_dict.get('tags', []),
+                tools=host_dict.get('tools', []),
             )
         return newhost
 
     def createHost(
         self, primary_ip: str, name: str, fqdn: str, os: str,
-        team_name: str, service_group: str, tags: List[str]
+        team_name: str, service_group: str, tags: List[str],
+        tools: List[dict]
     ) -> Host:
         """Create a new Host object and save it to the database.
 
@@ -208,10 +222,25 @@ class MongoConnection():
         :type os: str
         :param tags: Additional tags to identify the host.
         :type tags: List[str]
+        :param tools: Tools to prepoulate the host with.
+        :type tools: List[dict]
 
         :return: The Host object created.
         :rtype: Host
         """
+        tool_objs: List[Tool]
+        tool_objs = []
+        for tool_dict in tools:
+            if "tool_name" not in tool_dict:
+                raise Exception("Missing required property tool_name")
+            tool_objs.append(
+                self.createTool(
+                    tool_name=tool_dict['tool_name'],
+                    last_seen=float(tool_dict['last_seen']),
+                    first_seen=float(tool_dict['first_seen']),
+                    total_beacons=tool_dict['total_beacons'],
+                )
+            )
 
         newhost = Host(
             primary_ip=primary_ip,
@@ -221,11 +250,19 @@ class MongoConnection():
             team_name=team_name,
             service_group=service_group,
             tags=tags,
+            tools=tool_objs,
         )
         newhost.save()
         return newhost
 
-    def createTool(self, tool_name: str) -> Tool:
+    def createTool(self,
+                   tool_name: str,
+                   last_seen: float = float(
+                       datetime.datetime.now().timestamp()),
+                   first_seen: float = float(
+                       datetime.datetime.now().timestamp()),
+                   total_beacons: float = 0,
+                   ) -> Tool:
         """Creates a new Tool object given the name.
 
 
@@ -235,7 +272,12 @@ class MongoConnection():
         :return: The Tool object created.
         :rtype: Tool
         """
-        newTool = Tool(tool_name=tool_name)
+        newTool = Tool(
+            tool_name=tool_name,
+            last_seen=datetime.datetime.fromtimestamp(last_seen),
+            first_seen=datetime.datetime.fromtimestamp(first_seen),
+            total_beacons=total_beacons,
+        )
         return newTool
 
     def RegisterCallback(self, primary_ip: str, tool_name: str) -> int:

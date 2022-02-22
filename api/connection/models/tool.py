@@ -1,4 +1,5 @@
 import datetime
+import math
 
 from mongoengine import *
 
@@ -11,15 +12,15 @@ class Tool(EmbeddedDocument):
     """
 
     tool_name = StringField(required=True)
-    last_seen = DateTimeField(default=datetime.datetime.utcnow)
-    first_seen = DateTimeField(default=datetime.datetime.utcnow)
-    total_beacons = IntField(default=0)
+    last_seen = DateTimeField(default=datetime.datetime.now().timestamp())
+    first_seen = DateTimeField(default=datetime.datetime.now().timestamp())
+    total_beacons = LongField(default=0)
 
     def toDict(self):
         return {
             'tool_name': self.tool_name,
-            'last_seen': self.last_seen.isoformat(),
-            'first_seen': self.first_seen.isoformat(),
+            'last_seen': math.floor(self.last_seen.timestamp()),
+            'first_seen': math.floor(self.first_seen.timestamp()),
             'total_beacons': self.total_beacons
         }
 

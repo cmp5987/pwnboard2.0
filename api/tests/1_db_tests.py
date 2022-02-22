@@ -22,7 +22,13 @@ def test_build_board():
             "os": "LINUX",
             "service_group": "web-server",
             "team_name": "Hulto",
-            "tags": ["Linux", "Web", "HTTP"]
+            "tags": ["Linux", "Web", "HTTP"],
+            "tools": [{
+                "tool_name": "reptile",
+                "last_seen": 1645500015,
+                "first_seen": 1645500015,
+                "total_beacons": 1
+            }]
         },
         {
             "name": "Hulto  - mail-server",
@@ -30,7 +36,7 @@ def test_build_board():
             "os": "Windows",
             "service_group": "mail-server",
             "team_name": "Hulto",
-            "tags": ["Windows", "mail"]
+            "tags": ["Windows", "mail"],
         },
         {
             "name": "Hulto  - ssh-server",
@@ -38,7 +44,7 @@ def test_build_board():
             "os": "LINUX",
             "service_group": "ssh-server",
             "team_name": "Hulto",
-            "tags": ["Linux", "ssh"]
+            "tags": ["Linux", "ssh"],
         },
         {
             "name": "squidli  - web-server",
@@ -46,7 +52,7 @@ def test_build_board():
             "os": "LINUX",
             "service_group": "web-server",
             "team_name": "squidli",
-            "tags": ["Linux", "Web", "HTTP"]
+            "tags": ["Linux", "Web", "HTTP"],
         },
         {
             "name": "squidli  - mail-server",
@@ -54,7 +60,7 @@ def test_build_board():
             "os": "Windows",
             "service_group": "mail-server",
             "team_name": "squidli",
-            "tags": ["Windows", "mail"]
+            "tags": ["Windows", "mail"],
         },
         {
             "name": "squidli  - ssh-server",
@@ -62,7 +68,7 @@ def test_build_board():
             "os": "LINUX",
             "service_group": "ssh-server",
             "team_name": "squidli",
-            "tags": ["Linux", "ssh"]
+            "tags": ["Linux", "ssh"],
         }
     ]
     _ = myconn.BuildBoardFromDictList(board)

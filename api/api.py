@@ -48,7 +48,7 @@ class API():
 
     # redirect api hits to / to docs.
 
-    async def givedocs(self) -> web.Response:
+    async def givedocs(self, _: web.Request) -> web.Response:
         if self.debug:
             raise web.HTTPFound('/docs')
         else:
@@ -70,7 +70,7 @@ class API():
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BoardInit'
+                $ref: '#/components/schemas/Board'
 
         responses:
           '200':
@@ -118,14 +118,14 @@ class API():
         ---
         summary: Create a tool description.
         tags:
-          - tool_description
+          - Tool_description
         requestBody:
           description: JSON document to describe tool.
           required: true
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/tool_description'
+                $ref: '#/components/schemas/Tool_description'
 
         responses:
           '200':
@@ -157,7 +157,7 @@ class API():
         ---
         summary: Get a list or single tool descriptions
         tags:
-          - tool_description
+          - Tool_description
         parameters:
           - in: query
             name: tool_names
