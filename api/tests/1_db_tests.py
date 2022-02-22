@@ -300,6 +300,14 @@ def test_create_host_dict_errors_field():
                               fqdn='notset', os='notset', tags=[])
 
 
+def test_get_all_service_groups():
+    myconn = MongoConnection()
+    expected_set_of_service_groups = [
+        "mail-server", "web-server", "ssh-server"]
+    service_groups = myconn.GetAllServiceGroups()
+    assert(service_groups == expected_set_of_service_groups.sort())
+
+
 @ pytest.fixture(scope="session", autouse=True)
 def execute_before_any_test():
     test_wipe_db()

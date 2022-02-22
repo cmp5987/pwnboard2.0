@@ -109,6 +109,46 @@ class API():
         board = self.db.GetBoardDict()
         return web.Response(text=json.dumps(board))
 
+    async def getservicegroups(self, request: web.Request) -> web.Response:
+        """
+        Get a list or single tool descriptions
+        This is used by users to better understand what a tool does and how to use it.
+        ---
+        summary: Get a list of all service groups.
+        tags:
+          - Board
+        # parameters:
+        #   - in: query
+        #     name: tool_names
+        #     schema:
+        #       type: array
+        #       items:
+        #         type: string
+        #     required: true
+        #     description: The name or list of names of the tool(s) to query.
+
+        responses:
+          '200':
+            description: Expected response to a valid request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Response'
+        """
+        res: List[str]
+        res = []
+        # res: List[dict]
+        # res = []
+        # if 'tool_names' in request.rel_url.query.keys():
+        #     tool_names = list(request.rel_url.query['tool_names'].split(","))
+        #     tools = self.db.Gettool_descriptions(tool_names)
+        #     for tool in tools:
+        #         res.append(tool.toDict())
+        # else:
+        #     return web.HTTPInternalServerError(text=self.json_error('tool_names cannot be absent'))
+
+        # return web.Response(text=json.dumps(res))
+
     ### Tool desription registration ###
 
     async def settooldescription(self, request: web.Request) -> web.Response:
@@ -342,6 +382,9 @@ class API():
             web.post("/settooldesc", self.settooldescription),
             web.get("/gettooldesc", self.gettooldescription, allow_head=False),
             web.post("/generic", self.callback),
+            web.get("/getservicegroups",
+                    self.getservicegroups, allow_head=False),
+
         ])
         return db, app, swagger
 
