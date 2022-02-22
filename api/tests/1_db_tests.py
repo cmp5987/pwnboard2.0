@@ -158,9 +158,9 @@ def test_query_timedout_tool():
         assert(host.primary_ip == "10.0.0.1")
 
 
-def test_query_active_tool():
+def test_query_installed_tool():
     myconn = MongoConnection()
-    hosts = myconn.GetActiveToolHosts(["reptile"], 5)
+    hosts = myconn.GetInstalledToolHosts(["reptile"])
     assert(len(set(hosts)) == 1)
     for host in hosts:
         assert(host.primary_ip == "10.0.0.1")
@@ -202,39 +202,137 @@ def test_filter():
     assert(results[0]['primary_ip'] == "10.0.0.1")
 
 
-@pytest.fixture(scope="session", autouse=True)
+def test_filter_active():
+    myconn = MongoConnection()
+    results = myconn.Filter(
+        teams=[], service_groups=[],
+        oses=["LINUX"], tool_names=["reptile"], tool_match="active")
+    assert(len(results) == 1)
+
+
+def test_filter_inactive():
+    myconn = MongoConnection()
+    results = myconn.Filter(
+        teams=[], service_groups=[],
+        oses=["LINUX"], tool_names=["reptile"], tool_match="inactive")
+    assert(len(results) == 4)
+
+
+def test_filter_installed():
+    myconn = MongoConnection()
+    results = myconn.Filter(
+        teams=[], service_groups=[],
+        oses=["LINUX"], tool_names=["reptile"], tool_match="installed")
+    assert(len(results) == 1)
+
+
+def test_filter_never():
+    myconn = MongoConnection()
+    results = myconn.Filter(
+        teams=[], service_groups=[],
+        oses=["LINUX"], tool_names=["reptile"], tool_match="never")
+    assert(len(results) == 3)
+
+
+def test_callback_new_tool():
+    myconn = MongoConnection()
+    one = myconn.RegisterCallback("10.0.0.1", "newtool")
+    assert(one == 0)
+
+
+def test_get_hosts_by_os():
+    myconn = MongoConnection()
+    hosts = myconn.GetOsHosts(["LINUX"])
+    assert(len(set(hosts)) == 4)
+    for host in hosts:
+        assert("10.0." in host.primary_ip)
+
+
+def test_restore_board():
+    myconn = MongoConnection()
+    # Induce an error
+    board = [
+        {}
+    ]
+    # Make sure error is handled
+    try:
+        _ = myconn.BuildBoardFromDictList(board)
+    except Exception as e:
+        assert("Required fields not provided:" in str(e))
+    # Make sure board is reset.
+    board = myconn.GetBoard()
+    assert(len(set(board)) == 6)
+    for host in board:
+        assert('10.0.' in host.primary_ip)
+
+
+def test_get_host():
+    myconn = MongoConnection()
+    host = myconn.GetHost("10.0.0.1")
+    assert(host.primary_ip == "10.0.0.1")
+
+
+def test_get_host_errors():
+    myconn = MongoConnection()
+    with pytest.raises(Exception, match=r".*Expected type string for variable primary_ip.*") as exception:
+        _ = myconn.GetHost(1)
+
+
+def test_create_host_dict_errors_type():
+    myconn = MongoConnection()
+    with pytest.raises(Exception, match=r".*Expected dictionary recived.*") as exception:
+        _ = myconn.createHostDict('not a dictionary')
+
+
+def test_create_host_dict_errors_field():
+    myconn = MongoConnection()
+    with pytest.raises(Exception, match=r".*Required fields not provided.*") as exception:
+        _ = myconn.createHostDict({"service_group": "test"})
+
+
+def test_create_host_dict_errors_field():
+    myconn = MongoConnection()
+    with pytest.raises(Exception, match=r".*Missing required property tool_name.*") as exception:
+        _ = myconn.createHost(primary_ip="1.2.3.4", name="test1",
+                              team_name="teamtest", service_group="testgroup",
+                              tools=[
+                                  {"last_seen": 0, "first_seen": 0, "total_beacons": 0}],
+                              fqdn='notset', os='notset', tags=[])
+
+
+@ pytest.fixture(scope="session", autouse=True)
 def execute_before_any_test():
     test_wipe_db()
 
 
-if __name__ == '__main__':
-    test_wipe_db()
-    print(f"TEST test_build_board():              {test_build_board()}")
-    print(f"TEST test_query_team():               {test_query_team()}")
-    print(
-        f"TEST test_query_multiple_team():      {test_query_multiple_team()}")
-    print(
-        f"TEST test_query_service_group():       {test_query_service_group()}")
-    print(
-        f"TEST test_query_multi_service_group(): {test_query_multiple_service_group()}")
+# if __name__ == '__main__':
+    # test_wipe_db()
+    # print(f"TEST test_build_board():              {test_build_board()}")
+    # print(f"TEST test_query_team():               {test_query_team()}")
+    # print(
+    #     f"TEST test_query_multiple_team():      {test_query_multiple_team()}")
+    # print(
+    #     f"TEST test_query_service_group():       {test_query_service_group()}")
+    # print(
+    #     f"TEST test_query_multi_service_group(): {test_query_multiple_service_group()}")
 
-    print(
-        f"TEST test_callback():                 {test_callback()}")
-    print(
-        f"TEST test_callback_update_poc():      {test_callback_update_poc()}")
-    print(
-        f"TEST test_query_active_tool():        {test_query_active_tool()}")
+    # print(
+    #     f"TEST test_callback():                 {test_callback()}")
+    # print(
+    #     f"TEST test_callback_update_poc():      {test_callback_update_poc()}")
+    # print(
+    #     f"TEST test_query_active_tool():        {test_query_active_tool()}")
 
-    print(
-        f"TEST test_query_never_active_tool():  {test_query_never_active_tool()}")
-    sleep(2)
-    print(
-        f"TEST test_query_timedout_tool():      {test_query_timedout_tool()}")
-    test_callback()
-    print(
-        f"TEST test_query_active_tool():        {test_query_active_tool()}")
-    print(
-        f"TEST test_create_tool_desc():         {test_create_tool_desc()}")
-    print(
-        f"TEST test_update_tool_desc():         {test_update_tool_desc()}")
-    print(f"TEST test_filter():                   {test_filter()}")
+    # print(
+    #     f"TEST test_query_never_active_tool():  {test_query_never_active_tool()}")
+    # sleep(2)
+    # print(
+    #     f"TEST test_query_timedout_tool():      {test_query_timedout_tool()}")
+    # test_callback()
+    # print(
+    #     f"TEST test_query_active_tool():        {test_query_active_tool()}")
+    # print(
+    #     f"TEST test_create_tool_desc():         {test_create_tool_desc()}")
+    # print(
+    #     f"TEST test_update_tool_desc():         {test_update_tool_desc()}")
+    # print(f"TEST test_filter():                   {test_filter()}")
