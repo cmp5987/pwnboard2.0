@@ -65,7 +65,7 @@ def test_build_board():
             "tags": ["Linux", "ssh"]
         }
     ]
-    _ = myconn.BuildBoard(board)
+    _ = myconn.BuildBoardFromDictList(board)
     board = myconn.GetBoard()
     assert(len(set(board)) == 6)
     for host in board:
@@ -123,6 +123,7 @@ def test_query_active_tool():
     one = myconn.RegisterCallback("10.0.0.1", "reptile")
     two = myconn.RegisterCallback("10.0.0.1", "reptile")
     hosts = myconn.GetActiveToolHosts(["reptile", "goofkit"], 2)
+    assert(two-one == 1)
     assert(len(set(hosts)) == 1)
     for host in hosts:
         assert(host.primary_ip == "10.0.0.1")
@@ -144,7 +145,7 @@ def test_query_never_active_tool():
 
 def test_query_timedout_tool():
     myconn = MongoConnection()
-    sleep(2)
+    sleep(3)
     hosts = myconn.GetTimedOutToolHosts(["reptile", "goofkit"], 2)
     assert(len(set(hosts)) == 1)
     for host in hosts:
@@ -161,28 +162,28 @@ def test_query_active_tool():
 
 def test_create_tool_desc():
     myconn = MongoConnection()
-    _ = myconn.CreateToolDescription(
+    _ = myconn.Createtool_description(
         tool_name="goofkit", poc="Hulto", usage="kill -36 1")
-    _ = myconn.CreateToolDescription(
+    _ = myconn.Createtool_description(
         tool_name="reptile", poc="Hulto", usage="/root/reptile_up")
 
-    toolDescs = myconn.GetToolDescriptions(["reptile", "goofkit"])
-    assert(len(set(toolDescs)) == 2)
-    for toolDesc in toolDescs:
-        assert(toolDesc.tool_name in ["reptile", "goofkit"])
+    tool_descs = myconn.Gettool_descriptions(["reptile", "goofkit"])
+    assert(len(set(tool_descs)) == 2)
+    for tool_desc in tool_descs:
+        assert(tool_desc.tool_name in ["reptile", "goofkit"])
 
 
 def test_update_tool_desc():
     myconn = MongoConnection()
-    _ = myconn.CreateToolDescription(
+    _ = myconn.Createtool_description(
         tool_name="reptile", poc="squidli", usage="/root/reptile_up")
 
-    toolDescs = myconn.GetToolDescriptions(["reptile", "goofkit"])
-    assert(len(set(toolDescs)) == 2)
-    for toolDesc in toolDescs:
-        assert(toolDesc.tool_name in ["reptile", "goofkit"])
-        if toolDesc.tool_name == "reptile":
-            assert(toolDesc.poc == "squidli")
+    tool_descs = myconn.Gettool_descriptions(["reptile", "goofkit"])
+    assert(len(set(tool_descs)) == 2)
+    for tool_desc in tool_descs:
+        assert(tool_desc.tool_name in ["reptile", "goofkit"])
+        if tool_desc.tool_name == "reptile":
+            assert(tool_desc.poc == "squidli")
 
 
 def test_filter():

@@ -9,10 +9,10 @@ from pymongo.errors import DuplicateKeyError
 
 if __package__ is None or __package__ == '':
     from models.host import Host
-    from models.tool import Tool, ToolDescription
+    from models.tool import Tool, Tool_description
 else:
     from connection.models.host import Host
-    from connection.models.tool import Tool, ToolDescription
+    from connection.models.tool import Tool, Tool_description
 
 
 class MongoConnection():
@@ -40,13 +40,13 @@ class MongoConnection():
             mongodb_db, host=mongodb_host, port=mongodb_port)
 
     def WipeCollection(self):
-        """Delete the Host and ToolDescription collections. Mostly used for testing
+        """Delete the Host and Tool_description collections. Mostly used for testing
         should not be used mid event.
         """
         Host.drop_collection()
-        ToolDescription.drop_collection()
+        Tool_description.drop_collection()
 
-    def BuildBoard(self, board: list, retry=True) -> List[Host]:
+    def BuildBoardFromDictList(self, board: List[dict], retry=True) -> List[Host]:
         """Takes in a list of dictionaries defining the board. Modeled after the paragon \
         board. Example board:
         ::
@@ -78,17 +78,18 @@ class MongoConnection():
         error or an exception will be raisedd
         :rtype: List[Host]
         """
+        backup: List[Host]
         backup = self.GetBoard()
         try:
             Host.drop_collection()
-            boardobjs = []
+            board_host_list = []
             for host in board:
-                boardobjs.append(self.createHostDict(host))
+                board_host_list.append(self.createHostDict(host))
         except Exception as e:
             if retry:
                 self.BuildBoard(backup, retry=False)
             raise e
-        return boardobjs
+        return board_host_list
 
     def GetBoard(self) -> List[Host]:
         """Returns the current board. Pulls all hosts form the database. This may
@@ -99,10 +100,11 @@ class MongoConnection():
         error or an exception will be raisedd
         :rtype: List[Host]
         """
-        boardobjs = []
+        board_host_objs: List[Host]
+        board_host_objs = []
         for host in Host.objects():
-            boardobjs.append(host)
-        return boardobjs
+            board_host_objs.append(host)
+        return board_host_objs
 
     def GetBoardDict(self) -> List[dict]:
         """Returns the current board in JSON. Pulls all hosts form the database. This may
@@ -113,10 +115,11 @@ class MongoConnection():
         error or an exception will be raisedd
         :rtype: List[dict]
         """
-        boardobjs = []
+        board_dict_list: List[dict]
+        board_dict_list = []
         for host in Host.objects():
-            boardobjs.append(host.toDict())
-        return boardobjs
+            board_dict_list.append(host.toDict())
+        return board_dict_list
 
     def GetHost(self, primary_ip: str) -> Host:
         """Return Host object matched by primary_ip (the primary key for Host).
@@ -128,13 +131,17 @@ class MongoConnection():
         :return: The Host object requested.
         :rtype: Host
         """
-        foundhost = Host.objects(primary_ip=primary_ip).first()
-        if foundhost == None:
+        if not isinstance(primary_ip, str):
+            raise Exception(f"Expected type string for variable primary_ip\n"
+                            f"Recieved {type(primary_ip)}")
+        found_host_objs: Host
+        found_host_objs = Host.objects(primary_ip=primary_ip).first()
+        if found_host_objs == None:
             raise Exception(f"Host {primary_ip} does not exist yet.\n"
                             f"Consider loading a board")
-        return foundhost
+        return found_host_objs
 
-    def createHostDict(self, hostdict: dict) -> Host:
+    def createHostDict(self, host_dict: dict) -> Host:
         """Create a new Host object. Derived from a dictionary or
         loaded JSON.
         ::
@@ -148,35 +155,35 @@ class MongoConnection():
             }
 
 
-        :param hostdict: The structure defining the Host.
+        :param host_dict: The structure defining the Host.
         :type hostdict: dict
 
         :return: The Host object createdd.
         :rtype: Host
         """
-        if not isinstance(hostdict, dict):
-            raise Exception(f"Expected dictionary recived {type(hostdict)}")
-        if 'primary_ip' not in hostdict.keys() or \
-            'service_group' not in hostdict.keys() or \
-                'team_name' not in hostdict.keys():
+        if not isinstance(host_dict, dict):
+            raise Exception(f"Expected dictionary recived {type(host_dict)}")
+        if 'primary_ip' not in host_dict.keys() or \
+            'service_group' not in host_dict.keys() or \
+                'team_name' not in host_dict.keys():
             raise Exception(
                 "Required fields not provided:\primary_ip, service_group, team_name")
         newhost = None
         try:
-            newhost = self.GetHost(hostdict['primary_ip'])
+            newhost = self.GetHost(host_dict['primary_ip'])
         except Exception as e:
             if "does not exist yet." not in str(e):
                 raise e
         if newhost is None:
             newhost = self.createHost(
-                primary_ip=hostdict['primary_ip'],
-                team_name=hostdict['team_name'],
-                service_group=hostdict['service_group'],
-                name=hostdict.get(
-                    'name', f"{hostdict['team_name']} - {hostdict['service_group']}"),
-                fqdn=hostdict.get('fqdn', 'notset'),
-                os=hostdict.get('os', 'notset'),
-                tags=hostdict.get('tags', [])
+                primary_ip=host_dict['primary_ip'],
+                team_name=host_dict['team_name'],
+                service_group=host_dict['service_group'],
+                name=host_dict.get(
+                    'name', f"{host_dict['team_name']} - {host_dict['service_group']}"),
+                fqdn=host_dict.get('fqdn', 'notset'),
+                os=host_dict.get('os', 'notset'),
+                tags=host_dict.get('tags', [])
             )
         return newhost
 
@@ -244,23 +251,23 @@ class MongoConnection():
         :rtype: int
         """
         host = self.GetHost(primary_ip=primary_ip)
-        toolobj = None
+        tool_obj = None
         # Check if exists
         if host.tools is not None:
             for tool in host.tools:
                 if tool.tool_name == tool_name:
-                    toolobj = tool
-                    toolobj.lastseen = datetime.datetime.utcnow
-                    toolobj.totalbeacons = toolobj.totalbeacons+1
+                    tool_obj = tool
+                    tool_obj.last_seen = datetime.datetime.utcnow
+                    tool_obj.total_beacons = tool_obj.total_beacons+1
                     break
         # If Not create
-        if toolobj == None:
-            toolobj = self.createTool(
+        if tool_obj == None:
+            tool_obj = self.createTool(
                 tool_name=tool_name,
             )
-            host.tools.append(toolobj)
+            host.tools.append(tool_obj)
         host.save()
-        return int(toolobj.totalbeacons)
+        return int(tool_obj.total_beacons)
 
     # Get all hosts that are a part of one of the teams provided
     # in the team_name list. eg. ["Hulto", "squid"] or ["Hulto"]
@@ -274,10 +281,11 @@ class MongoConnection():
         :return: A list of hosts belonging to the requested teams, returns [] on error or none foundd.
         :rtype: List[Host]
         """
-        hostList = []
+        host_obj_list: List[Host]
+        host_obj_list = []
         for host in Host.objects(team_name__in=team_name):
-            hostList.append(host)
-        return hostList
+            host_obj_list.append(host)
+        return host_obj_list
 
     def GetServiceHosts(self, service_group: List[str]) -> List[Host]:
         """Filter for hosts from specific service groups.
@@ -290,10 +298,11 @@ class MongoConnection():
         none found.
         :rtype: List[Host]
         """
-        hostList = []
+        host_obj_list: List[Host]
+        host_obj_list = []
         for host in Host.objects(service_group__in=service_group):
-            hostList.append(host)
-        return hostList
+            host_obj_list.append(host)
+        return host_obj_list
 
     def GetOsHosts(self, oses: List[str]) -> List[Host]:
         """Filter for hosts from specific oses.
@@ -306,10 +315,11 @@ class MongoConnection():
         none found.
         :rtype: List[Host]
         """
-        hostList = []
+        host_obj_list: List[Host]
+        host_obj_list = []
         for host in Host.objects(os__in=oses):
-            hostList.append(host)
-        return hostList
+            host_obj_list.append(host)
+        return host_obj_list
 
     def GetInstalledToolHosts(self, tool_names: List[str]) -> List[Host]:
         """Filter for hosts that have had a tool installed.
@@ -323,10 +333,11 @@ class MongoConnection():
         none foundd.
         :rtype: List[Host]
         """
-        hostList = []
+        host_obj_list: List[Host]
+        host_obj_list = []
         for host in Host.objects(tools__tool_name__in=tool_names):
-            hostList.append(host)
-        return hostList
+            host_obj_list.append(host)
+        return host_obj_list
 
     def GetNeverActiveToolHosts(self, tool_names: List[str]) -> List[Host]:
         """Filter for hosts that have never had a tool installed.
@@ -340,10 +351,11 @@ class MongoConnection():
         none foundd.
         :rtype: List[Host]
         """
-        hostList = []
+        host_obj_list: List[Host]
+        host_obj_list = []
         for host in Host.objects(tools__tool_name__not__in=tool_names):
-            hostList.append(host)
-        return hostList
+            host_obj_list.append(host)
+        return host_obj_list
 
     def GetTimedOutToolHosts(self, tool_names: List[str], timeout_seconds: int) -> List[Host]:
         """Filter for hosts that have a tool installed but haven't see it in timeout_seconds.
@@ -359,11 +371,12 @@ class MongoConnection():
         returns [] on error or none foundd.
         :rtype: List[Host]
         """
-        hostList = []
+        host_obj_list: List[Host]
+        host_obj_list = []
         for host in Host.objects(tools__tool_name__in=tool_names)\
-                .filter(tools__lastseen__lt=datetime.datetime.now()-datetime.timedelta(seconds=timeout_seconds)):
-            hostList.append(host)
-        return hostList
+                .filter(tools__last_seen__lt=datetime.datetime.now()-datetime.timedelta(seconds=timeout_seconds)):
+            host_obj_list.append(host)
+        return host_obj_list
 
     def GetActiveToolHosts(self, tool_names: List[str], timeout_seconds: int) -> List[Host]:
         """Filter for hosts that have a tool installed and have seen it within timeout_seconds.
@@ -380,13 +393,14 @@ class MongoConnection():
         returns [] on error or none foundd.
         :rtype: List[Host]
         """
-        hostList = []
+        host_obj_list: List[Host]
+        host_obj_list = []
         for host in Host.objects(tools__tool_name__in=tool_names)\
-                .filter(tools__lastseen__gte=datetime.datetime.now()-datetime.timedelta(seconds=timeout_seconds)):
-            hostList.append(host)
-        return hostList
+                .filter(tools__last_seen__gte=datetime.datetime.now()-datetime.timedelta(seconds=timeout_seconds)):
+            host_obj_list.append(host)
+        return host_obj_list
 
-    def CreateToolDescription(self, tool_name: str, poc: str, usage: str) -> None:
+    def Createtool_description(self, tool_name: str, poc: str, usage: str) -> None:
         """Create a tool description object and save it to the DB. Tool Descriptions help users
         better identify and use tools when working with pwnboard.
 
@@ -399,35 +413,36 @@ class MongoConnection():
         :type usage: str
         """
 
-        toolDescs = self.GetToolDescriptions([tool_name])
-        if len(toolDescs) == 0:
-            toolDesc = ToolDescription(
+        tool_descs = self.Gettool_descriptions([tool_name])
+        if len(tool_descs) == 0:
+            tool_desc = Tool_description(
                 tool_name=tool_name,
                 poc=poc,
                 usage=usage
             )
         else:
-            for toolDesc in toolDescs:
-                toolDesc.poc = poc
-                toolDesc.usage = usage
-        toolDesc.save()
+            for tool_desc in tool_descs:
+                tool_desc.poc = poc
+                tool_desc.usage = usage
+        tool_desc.save()
 
-    def GetToolDescriptions(self, tool_names: List[str]) -> List[ToolDescription]:
+    def Gettool_descriptions(self, tool_names: List[str]) -> List[Tool_description]:
         """Get the description objects of multiple tools given a list of tool names.
 
 
         :param tool_names: A list of tool names. To pull the Tool Description for.
         :type team_name: List[str]
 
-        :return: A list of ToolDescriptio objects based on the names provided, returns [] on error \
+        :return: A list of tool_descriptio objects based on the names provided, returns [] on error \
         or none foundd.
-        :rtype: List[ToolDescription]
+        :rtype: List[Tool_description]
         """
-        toolDescs = []
-        for toolDesc in ToolDescription.objects(
+        tool_descs: List[Tool_description]
+        tool_descs = []
+        for tool_desc in Tool_description.objects(
                 tool_name__in=tool_names):
-            toolDescs.append(toolDesc)
-        return toolDescs
+            tool_descs.append(tool_desc)
+        return tool_descs
 
     def Filter(self, teams: List[str], service_groups: List[str], oses: List[str],
                tool_names: List[str], tool_match: str = "active", timeout: int = 480) -> List[Host]:
@@ -449,7 +464,7 @@ class MongoConnection():
 
         :return: A list of dictionary objects based on the names provided, returns [] on error \
         or none foundd.
-        :rtype: List[ToolDescription]
+        :rtype: List[Tool_description]
         """
 
         teamSet = set()

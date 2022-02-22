@@ -55,14 +55,14 @@ components:
       properties:
         tool_name:
           type: string
-        lastseen:
+        last_seen:
           type: string
-        firstseen:
+        first_seen:
           type: string
-        totalbeacons:
+        total_beacons:
           type: string
 
-    ToolDescription:
+    tool_description:
       type: object
       properties:
         toolname:
