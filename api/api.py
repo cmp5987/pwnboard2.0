@@ -82,8 +82,8 @@ class API():
         """
         try:
             body = await request.text()
-            jsondDoc = json.loads(body)
-            _ = self.db.BuildBoard(jsondDoc)
+            jsond_doc = json.loads(body)
+            _ = self.db.BuildBoardFromDictList(jsond_doc)
             board = self.db.GetBoardDict()
             return web.Response(text=json.dumps(board))
         except Exception as e:
@@ -118,14 +118,14 @@ class API():
         ---
         summary: Create a tool description.
         tags:
-          - ToolDescription
+          - tool_description
         requestBody:
           description: JSON document to describe tool.
           required: true
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ToolDescription'
+                $ref: '#/components/schemas/tool_description'
 
         responses:
           '200':
@@ -137,14 +137,14 @@ class API():
         """
         body = await request.text()
         try:
-            jsondDoc = json.loads(body)
+            jsond_doc = json.loads(body)
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(f'{e}'))
-        if 'toolname' in jsondDoc and 'poc' in jsondDoc and 'usage' in jsondDoc:
-            self.db.CreateToolDescription(
-                tool_name=jsondDoc['toolname'],
-                poc=jsondDoc['poc'],
-                usage=jsondDoc['usage'],
+        if 'toolname' in jsond_doc and 'poc' in jsond_doc and 'usage' in jsond_doc:
+            self.db.Createtool_description(
+                tool_name=jsond_doc['toolname'],
+                poc=jsond_doc['poc'],
+                usage=jsond_doc['usage'],
             )
         else:
             return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))
@@ -157,10 +157,10 @@ class API():
         ---
         summary: Get a list or single tool descriptions
         tags:
-          - ToolDescription
+          - tool_description
         parameters:
           - in: query
-            name: toolnames
+            name: tool_names
             schema:
               type: array
               items:
@@ -178,13 +178,13 @@ class API():
         """
         res: List[dict]
         res = []
-        if 'toolnames' in request.rel_url.query.keys():
-            toolnames = list(request.rel_url.query['toolnames'].split(","))
-            tools = self.db.GetToolDescriptions(toolnames)
+        if 'tool_names' in request.rel_url.query.keys():
+            tool_names = list(request.rel_url.query['tool_names'].split(","))
+            tools = self.db.Gettool_descriptions(tool_names)
             for tool in tools:
                 res.append(tool.toDict())
         else:
-            return web.HTTPInternalServerError(text=self.json_error('toolnames cannot be absent'))
+            return web.HTTPInternalServerError(text=self.json_error('tool_names cannot be absent'))
 
         return web.Response(text=json.dumps(res))
 
@@ -215,13 +215,13 @@ class API():
         """
         body = await request.text()
         try:
-            jsondDoc = json.loads(body)
+            jsond_doc = json.loads(body)
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(f'{e}'))
-        if 'type' in jsondDoc and 'ip' in jsondDoc:
+        if 'type' in jsond_doc and 'ip' in jsond_doc:
             self.db.RegisterCallback(
-                primary_ip=jsondDoc['ip'],
-                tool_name=jsondDoc['type']
+                primary_ip=jsond_doc['ip'],
+                tool_name=jsond_doc['type']
             )
         else:
             return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))

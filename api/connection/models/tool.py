@@ -11,22 +11,22 @@ class Tool(EmbeddedDocument):
     """
 
     tool_name = StringField(required=True)
-    lastseen = DateTimeField(default=datetime.datetime.utcnow)
-    firstseen = DateTimeField(default=datetime.datetime.utcnow)
-    totalbeacons = IntField(default=0)
+    last_seen = DateTimeField(default=datetime.datetime.utcnow)
+    first_seen = DateTimeField(default=datetime.datetime.utcnow)
+    total_beacons = IntField(default=0)
 
     def toDict(self):
         return {
             'tool_name': self.tool_name,
-            'lastseen': self.lastseen.isoformat(),
-            'firstseen': self.firstseen.isoformat(),
-            'totalbeacons': self.totalbeacons
+            'last_seen': self.last_seen.isoformat(),
+            'first_seen': self.first_seen.isoformat(),
+            'total_beacons': self.total_beacons
         }
 
 
-class ToolDescription(Document):
+class Tool_description(Document):
     """This class is a DRM (Document Relational Model) for mongoDB. This class defines \
-    the ToolDescription objects. These are only used for the UI to communicate with \
+    the tool_description objects. These are only used for the UI to communicate with \
     users how tools should be used and who to reach out to in the event of an error.
     """
     tool_name = StringField(required=True, unique=True)
