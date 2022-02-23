@@ -13,7 +13,7 @@ from connection.connection import MongoConnection
 
 
 class API():
-    db = MongoConnection()
+    db = None
     app = None
     swagger = None
     routes = web.RouteTableDef()
@@ -29,6 +29,7 @@ class API():
         self.debug = debug
         self.bind_host = bind_host
         self.redirect_url = redirect_url
+        self.db = MongoConnection()
         self.db, self.app, self.swagger = self.init_app()
 
     def start(self):
@@ -108,6 +109,31 @@ class API():
         """
         board = self.db.GetBoardDict()
         return web.Response(text=json.dumps(board))
+
+    async def getservicegroups(self, request: web.Request) -> web.Response:
+        """
+        Get a list or single tool descriptions
+        This is used by users to better understand what a tool does and how to use it.
+        ---
+        summary: Get a list of all service groups.
+        tags:
+          - Board
+
+        responses:
+          '200':
+            description: Expected response to a valid request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Response'
+        """
+        res: List[str]
+        res = []
+        try:
+            service_groups = self.db.GetAllServiceGroups()
+            return web.json_response({"res": service_groups})
+        except Exception as e:
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
     ### Tool desription registration ###
 
@@ -342,10 +368,13 @@ class API():
             web.post("/settooldesc", self.settooldescription),
             web.get("/gettooldesc", self.gettooldescription, allow_head=False),
             web.post("/generic", self.callback),
+            web.get("/getservicegroups",
+                    self.getservicegroups, allow_head=False),
+
         ])
         return db, app, swagger
 
 
 if __name__ == '__main__':
-    pwnboardAPI = API(debug=False)
+    pwnboardAPI = API(debug=True)
     pwnboardAPI.start()

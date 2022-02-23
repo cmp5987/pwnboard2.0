@@ -90,6 +90,18 @@ async def test_callback(session):
         assert(TEST_BOARD == resp_dict_list)
 
 
+async def test_getservicegroups(session):
+    expected_servicegroups = ["mail-server", "web-server", "ssh-server"]
+    expected_servicegroups.sort()
+    async with session.get(API_URL+'getservicegroups') as resp:
+        resp_text = await resp.text()
+        resp_dict = json.loads(resp_text)
+        assert('res' in resp_dict)
+        if 'res' in resp_dict:
+            servicegroups = resp_dict['res']
+            assert(servicegroups == expected_servicegroups)
+
+
 @ pytest.fixture
 async def session():
     return aiohttp.ClientSession()

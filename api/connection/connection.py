@@ -1,7 +1,7 @@
 import datetime
 import sys
 import time
-from typing import Any, List
+from typing import Any, List, Set
 
 import mongoengine
 from mongoengine.errors import NotUniqueError
@@ -548,3 +548,23 @@ class MongoConnection():
             for i in list(solution_set):
                 res.append(i.toDict())
         return res
+
+    def GetAllServiceGroups(self) -> List[str]:
+        """Get the description objects of multiple tools given a list of tool names.
+
+
+        :param tool_names: A list of tool names. To pull the Tool Description for.
+        :type team_name: List[str]
+
+        :return: A list of tool_descriptio objects based on the names provided, returns [] on error \
+        or none foundd.
+        :rtype: List[Tool_description]
+        """
+        service_groups: List[str]
+        service_groups = []
+        host: Host
+        # for service_group in Host.objects().distinct(field="service_group"):
+        #     service_groups.append(service_group)
+        service_groups = Host.objects().distinct(field="service_group")
+        service_groups.sort()
+        return service_groups
