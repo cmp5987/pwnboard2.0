@@ -13,7 +13,7 @@ from connection.connection import MongoConnection
 
 
 class API():
-    db = MongoConnection()
+    db = None
     app = None
     swagger = None
     routes = web.RouteTableDef()
@@ -29,6 +29,7 @@ class API():
         self.debug = debug
         self.bind_host = bind_host
         self.redirect_url = redirect_url
+        self.db = MongoConnection()
         self.db, self.app, self.swagger = self.init_app()
 
     def start(self):
@@ -117,15 +118,6 @@ class API():
         summary: Get a list of all service groups.
         tags:
           - Board
-        # parameters:
-        #   - in: query
-        #     name: tool_names
-        #     schema:
-        #       type: array
-        #       items:
-        #         type: string
-        #     required: true
-        #     description: The name or list of names of the tool(s) to query.
 
         responses:
           '200':
@@ -137,17 +129,11 @@ class API():
         """
         res: List[str]
         res = []
-        # res: List[dict]
-        # res = []
-        # if 'tool_names' in request.rel_url.query.keys():
-        #     tool_names = list(request.rel_url.query['tool_names'].split(","))
-        #     tools = self.db.Gettool_descriptions(tool_names)
-        #     for tool in tools:
-        #         res.append(tool.toDict())
-        # else:
-        #     return web.HTTPInternalServerError(text=self.json_error('tool_names cannot be absent'))
-
-        # return web.Response(text=json.dumps(res))
+        try:
+            service_groups = self.db.GetAllServiceGroups()
+            return web.json_response({"res": service_groups})
+        except Exception as e:
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
     ### Tool desription registration ###
 
@@ -390,5 +376,5 @@ class API():
 
 
 if __name__ == '__main__':
-    pwnboardAPI = API(debug=False)
+    pwnboardAPI = API(debug=True)
     pwnboardAPI.start()

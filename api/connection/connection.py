@@ -1,7 +1,7 @@
 import datetime
 import sys
 import time
-from typing import Any, List
+from typing import Any, List, Set
 
 import mongoengine
 from mongoengine.errors import NotUniqueError
@@ -562,6 +562,9 @@ class MongoConnection():
         """
         service_groups: List[str]
         service_groups = []
-        for service_group in Host.objects().distinct("service_group"):
-            service_groups.append(service_group)
-        return service_groups.sort()
+        host: Host
+        # for service_group in Host.objects().distinct(field="service_group"):
+        #     service_groups.append(service_group)
+        service_groups = Host.objects().distinct(field="service_group")
+        service_groups.sort()
+        return service_groups
