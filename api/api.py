@@ -112,8 +112,7 @@ class API():
 
     async def getservicegroups(self, request: web.Request) -> web.Response:
         """
-        Get a list or single tool descriptions
-        This is used by users to better understand what a tool does and how to use it.
+        Get a list of all service groups
         ---
         summary: Get a list of all service groups.
         tags:
@@ -137,10 +136,9 @@ class API():
 
     async def getteamnames(self, request: web.Request) -> web.Response:
         """
-        Get a list or single tool descriptions
-        This is used by users to better understand what a tool does and how to use it.
+        Get a list of all team names
         ---
-        summary: Get a list of all service groups.
+        summary: Get a list of all team names
         tags:
           - Board
 
@@ -162,10 +160,9 @@ class API():
 
     async def gettoolnames(self, request: web.Request) -> web.Response:
         """
-        Get a list or single tool descriptions
-        This is used by users to better understand what a tool does and how to use it.
+        Get a list of all tool names.
         ---
-        summary: Get a list of all service groups.
+        summary: Get a list of all tool names.
         tags:
           - Board
 
