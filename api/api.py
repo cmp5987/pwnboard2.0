@@ -135,6 +135,56 @@ class API():
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
+    async def getteamnames(self, request: web.Request) -> web.Response:
+        """
+        Get a list or single tool descriptions
+        This is used by users to better understand what a tool does and how to use it.
+        ---
+        summary: Get a list of all service groups.
+        tags:
+          - Board
+
+        responses:
+          '200':
+            description: Expected response to a valid request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Response'
+        """
+        res: List[str]
+        res = []
+        try:
+            team_names = self.db.GetAllTeamNames()
+            return web.json_response({"res": team_names})
+        except Exception as e:
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
+
+    async def gettoolnames(self, request: web.Request) -> web.Response:
+        """
+        Get a list or single tool descriptions
+        This is used by users to better understand what a tool does and how to use it.
+        ---
+        summary: Get a list of all service groups.
+        tags:
+          - Board
+
+        responses:
+          '200':
+            description: Expected response to a valid request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Response'
+        """
+        res: List[str]
+        res = []
+        try:
+            tool_names = self.db.GetAllToolNames()
+            return web.json_response({"res": tool_names})
+        except Exception as e:
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
+
     ### Tool desription registration ###
 
     async def settooldescription(self, request: web.Request) -> web.Response:
@@ -370,6 +420,10 @@ class API():
             web.post("/generic", self.callback),
             web.get("/getservicegroups",
                     self.getservicegroups, allow_head=False),
+            web.get("/getteamnames",
+                    self.getteamnames, allow_head=False),
+            web.get("/gettoolnames",
+                    self.gettoolnames, allow_head=False),
 
         ])
         return db, app, swagger

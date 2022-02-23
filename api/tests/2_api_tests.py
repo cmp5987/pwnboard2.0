@@ -102,6 +102,30 @@ async def test_getservicegroups(session):
             assert(servicegroups == expected_servicegroups)
 
 
+async def test_getservicegroups(session):
+    expected_teams = ['Hulto', 'squidli']
+    expected_teams.sort()
+    async with session.get(API_URL+'getteamnames') as resp:
+        resp_text = await resp.text()
+        resp_dict = json.loads(resp_text)
+        assert('res' in resp_dict)
+        if 'res' in resp_dict:
+            team_names = resp_dict['res']
+            assert(team_names == expected_teams)
+
+
+async def test_gettoolnames(session):
+    expected_toolnames = ['reptile']
+    expected_toolnames.sort()
+    async with session.get(API_URL+'gettoolnames') as resp:
+        resp_text = await resp.text()
+        resp_dict = json.loads(resp_text)
+        assert('res' in resp_dict)
+        if 'res' in resp_dict:
+            tool_names = resp_dict['res']
+            assert(tool_names == expected_toolnames)
+
+
 @ pytest.fixture
 async def session():
     return aiohttp.ClientSession()
