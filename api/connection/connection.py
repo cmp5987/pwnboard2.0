@@ -550,21 +550,40 @@ class MongoConnection():
         return res
 
     def GetAllServiceGroups(self) -> List[str]:
-        """Get the description objects of multiple tools given a list of tool names.
+        """Get a list of all service groups in the environment.
 
-
-        :param tool_names: A list of tool names. To pull the Tool Description for.
-        :type team_name: List[str]
-
-        :return: A list of tool_descriptio objects based on the names provided, returns [] on error \
-        or none foundd.
-        :rtype: List[Tool_description]
+        :return: A list of service groups present on the board, returns [] on error \
+        or raises an error.
+        :rtype: List[str]
         """
         service_groups: List[str]
         service_groups = []
-        host: Host
-        # for service_group in Host.objects().distinct(field="service_group"):
-        #     service_groups.append(service_group)
         service_groups = Host.objects().distinct(field="service_group")
         service_groups.sort()
         return service_groups
+
+    def GetAllTeamNames(self) -> List[str]:
+        """Get a list of all service groups in the environment.
+
+        :return: A list of service groups present on the board, returns [] on error \
+        or raises an error.
+        :rtype: List[str]
+        """
+        team_names: List[str]
+        team_names = []
+        team_names = Host.objects().distinct(field="team_name")
+        team_names.sort()
+        return team_names
+
+    def GetAllToolNames(self) -> List[str]:
+        """Get a list of all service groups in the environment.
+
+        :return: A list of service groups present on the board, returns [] on error \
+        or raises an error.
+        :rtype: List[str]
+        """
+        tool_names: List[str]
+        tool_names = []
+        tool_names = Host.objects().distinct(field="tools.tool_name")
+        tool_names.sort()
+        return tool_names

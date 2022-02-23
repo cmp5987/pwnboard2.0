@@ -309,6 +309,22 @@ def test_get_all_service_groups():
     assert(service_groups == expected_set_of_service_groups)
 
 
+def test_get_all_team_names():
+    myconn = MongoConnection()
+    expected_set_of_team_names = ['Hulto', 'squidli']
+    expected_set_of_team_names.sort()
+    team_names = myconn.GetAllTeamNames()
+    assert(team_names == expected_set_of_team_names)
+
+
+def test_get_all_tool_names():
+    myconn = MongoConnection()
+    expected_set_of_tool_names = ['newtool', 'reptile']
+    expected_set_of_tool_names.sort()
+    tool_names = myconn.GetAllToolNames()
+    assert(tool_names == expected_set_of_tool_names)
+
+
 @ pytest.fixture(scope="session", autouse=True)
 def execute_before_any_test():
     test_wipe_db()
