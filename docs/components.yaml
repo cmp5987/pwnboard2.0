@@ -10,13 +10,13 @@ components:
     #     properties:
     #       name:
     #         type: string
-    #       primaryIP:
+    #       primary_ip:
     #         type: string
     #       os:
     #         type: string
-    #       serviceGroup:
+    #       service_group:
     #         type: string
-    #       teamName:
+    #       team_name:
     #         type: string
     #       tags:
     #         type: array
@@ -33,13 +33,13 @@ components:
       properties:
         name:
           type: string
-        primaryIP:
+        primary_ip:
           type: string
         os:
           type: string
-        serviceGroup:
+        service_group:
           type: string
-        teamName:
+        team_name:
           type: string
         tags:
           type: array
