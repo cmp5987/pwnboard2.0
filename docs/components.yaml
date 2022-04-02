@@ -3,43 +3,39 @@ components:
   # Reusable schemas (data models)
   #-------------------------------
   schemas:
-    # BoardInit: # Can be referenced as '#/components/schemas/BoardInit'
-    #   type: array
-    #   items:
-    #     type: object
-    #     properties:
-    #       name:
-    #         type: string
-    #       primaryIP:
-    #         type: string
-    #       os:
-    #         type: string
-    #       serviceGroup:
-    #         type: string
-    #       teamName:
-    #         type: string
-    #       tags:
-    #         type: array
-    #         items:
-    #           type: string
-
     Board: # Can be referenced as '#/components/schemas/Board'
       type: array
       items:
         $ref: "#/components/schemas/Host"
+
+    BoardRows:
+      type: array
+      items:
+        $ref: "#/components/schemas/Row"
+
+    Row:
+      type: object
+      properties:
+        service_group:
+          type: string
+        teams:
+          type: object
+          properties:
+            team_name_literal:
+              $ref: "#/components/schemas/Host"
 
     Host:
       type: object
       properties:
         name:
           type: string
-        primaryIP:
+        primary_ip:
           type: string
         os:
           type: string
-        serviceGroup:
+        service_group:
           type: string
-        teamName:
+        team_name:
           type: string
         tags:
           type: array
@@ -56,16 +52,16 @@ components:
         tool_name:
           type: string
         last_seen:
-          type: string
+          type: number
         first_seen:
-          type: string
+          type: number
         total_beacons:
-          type: string
+          type: number
 
     Tool_description:
       type: object
       properties:
-        toolname:
+        tool_name:
           type: string
         poc:
           type: string
