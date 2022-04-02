@@ -110,6 +110,40 @@ class API():
         board = self.db.GetBoardDict()
         return web.Response(text=json.dumps(board))
 
+    async def getboardrows(self, request: web.Request) -> web.Response:
+        """
+        Get current board a for event in row format
+        The board will represent all the hosts.
+        ---
+        summary: Get board rows for the event. Used by font-end.
+        tags:
+          - Board
+
+        responses:
+          '200':
+            description: Expected response to a valid request
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BoardRows'
+        """
+        board = self.db.GetBoardDict()
+
+        rows = {}
+        for host in board:
+            if host['service_group'] not in rows.keys():
+                rows[host['service_group']] = {}
+                rows[host['service_group']]['service_group'] = host['service_group']
+                rows[host['service_group']]['teams'] = {}
+
+            rows[host['service_group']]['teams'][host['team_name']] = host
+
+        res = []
+        for row_key in rows.keys():
+            res.append(rows[row_key])
+
+        return web.Response(text=json.dumps(res))
+
     async def getservicegroups(self, request: web.Request) -> web.Response:
         """
         Get a list of all service groups
@@ -412,6 +446,7 @@ class API():
             web.get("/filter", filter, allow_head=False),
             web.post("/setboard", self.setboard),
             web.get("/getboard", self.getboard, allow_head=False),
+            web.get("/getboardrows", self.getboardrows, allow_head=False),
             web.post("/settooldesc", self.settooldescription),
             web.get("/gettooldesc", self.gettooldescription, allow_head=False),
             web.post("/generic", self.callback),
