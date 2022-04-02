@@ -47,8 +47,7 @@ class MongoConnection():
         Tool_description.drop_collection()
 
     def BuildBoardFromDictList(self, board: List[dict], retry=True) -> List[Host]:
-        """Takes in a list of dictionaries defining the board. Modeled after the paragon \
-        board. Example board:
+        """Takes in a list of dictionaries defining the board. Modeled after the paragon board. Example board:
         ::
             [
                 {
