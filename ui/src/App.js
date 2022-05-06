@@ -1,17 +1,22 @@
 import React from 'react';
-import { Routes, Route } from "react-router-dom";
+import {
+  QueryClient,
+  QueryClientProvider
+} from "react-query";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import About from './pages/About';
-import Home from './pages/Home';
+import HostAccess from './pages/HostAccess';
 
 function App() {
+  const queryClient = new QueryClient();
   return (
-    <div className="m-0 w-full h-full bg-black overflow-x-scroll text-gray-400" >
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="about" element={<About />} />
-        </Routes>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route path="/" element={<HostAccess />} />
+        <Route path="about" element={<About />} />
+      </Routes>
+    </QueryClientProvider>
   );
 }
 
