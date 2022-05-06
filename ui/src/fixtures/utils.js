@@ -1,5 +1,5 @@
-import _ from "lodash";
 import { faker } from 'https://cdn.skypack.dev/@faker-js/faker';
+import _ from "lodash";
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -34,6 +34,8 @@ export function mockHighLevelAcessData(teamCount, serviceCount, toolCount){
     let mockToolArray = mockToolList(toolCount);
     console.log(mockTeamList(teamCount));
     let mockBoardData = [];
+    let currentTime = Math.floor(new Date().getTime() / 1000.0);
+
 
     for(let service of mockServiceArray){
         let mockRowData = {
@@ -52,16 +54,15 @@ export function mockHighLevelAcessData(teamCount, serviceCount, toolCount){
                           "string 1",
                           "string 2"
                         ],
-                        "tools": mockToolArray.slice(0, toolRandomCount).map( (value) =>  {
-                          let firstSeen = faker.datatype.number(1640000000, 1649012027);
-                          let lastSeen  = faker.datatype.number(firstSeen, 1649012027);
+              "tools": mockToolArray.slice(0, toolRandomCount).map((value) => {
+                          let firstSeen = _.random(currentTime - 1000, currentTime);
+                          let lastSeen  = _.random(firstSeen, currentTime);
                            return {
-                             "tool_name": value, 
+                             "tool_name": value,
                              "last_seen": lastSeen,
                              "first_seen": firstSeen,
-                             "total_beacons": faker.datatype.number(4, 30) 
+                             "total_beacons": faker.datatype.number(4, 30)
                           }
-                      
                         })
                       };
         }

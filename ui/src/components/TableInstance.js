@@ -4,7 +4,7 @@ import { useTable } from 'react-table';
 import TableLayout from './TableLayout';
 
 export default function TableInstance({columnData, tableData}){
-  
+
   const [columns, data] = useMemo(
     () => {
       const columns = [

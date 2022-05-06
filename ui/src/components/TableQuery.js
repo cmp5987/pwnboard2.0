@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
 import { testDataSample1 } from "../fixtures/testDataSample1";
-import { mockHighLevelAcessData } from "../fixtures/utils";
 import TableInstance from "./TableInstance";
 
-export default function TableQuery(){
-  let testData = mockHighLevelAcessData(20,20,10);
-  console.log(testData)
+export default function TableQuery({ data }) {
+  // const { status, data, error, isFetching } = useBoard();
+  // console.log(data);
+  // console.log(getBackendBaseUrl());
 
   function formatData(inData){
     let formattedData = [];
@@ -19,10 +18,10 @@ export default function TableQuery(){
     }
     return formattedData
   }
-  let formattedData = formatData(testData.data);
+  let formattedData = formatData(data.data);
   let teamData = Object.keys(testDataSample1[0].teams);
-  
+
     return (
-      <TableInstance columnData={testData.teamList} tableData={formattedData}/>
+      <TableInstance columnData={data.teamList} tableData={formattedData}/>
     );
 };
