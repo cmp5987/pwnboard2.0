@@ -3,26 +3,78 @@ components:
   # Reusable schemas (data models)
   #-------------------------------
   schemas:
-    Board: # Can be referenced as '#/components/schemas/Board'
+    Board:
       type: array
       items:
         $ref: "#/components/schemas/Host"
+      example:
+        - name: "Team 8 - wiki"
+          primary_ip: "10.8.0.12"
+          os: "Debian 11"
+          service_group: "wiki"
+          team_name: "Team 8"
+          tags: ["linux", "wiki", "team 8", "inscope"]
+          tools:
+            - tool_name: Reptile
+              last_seen: 1673322084
+              first_seen: 1673321010
+              total_beacons: 120
+        - name: "Team 8 - DB"
+          primary_ip: "10.8.0.13"
+          os: "Debian 11"
+          service_group: "db"
+          team_name: "Team 8"
+          tags: ["linux", "db", "team 8", "inscope"]
+          tools:
+            - tool_name: Reptile
+              last_seen: 1673322084
+              first_seen: 1673321010
+              total_beacons: 120
+            - tool_name: Nomnom
+              last_seen: 1673322064
+              first_seen: 1673321028
+              total_beacons: 5
+        - name: "Team 6 - wiki"
+          primary_ip: "10.6.0.12"
+          os: "Debian 11"
+          service_group: "wiki"
+          team_name: "Team 6"
+          tags: ["linux", "wiki", "team 6", "inscope"]
+          tools:
+            - tool_name: Reptile
+              last_seen: 1673322084
+              first_seen: 1673321010
+              total_beacons: 120
+        - name: "Team 6 - DB"
+          primary_ip: "10.6.0.13"
+          os: "Debian 11"
+          service_group: "db"
+          team_name: "Team 6"
+          tags: ["linux", "db", "team 6", "inscope"]
+          tools:
+            - tool_name: Reptile
+              last_seen: 1673322084
+              first_seen: 1673321010
+              total_beacons: 120
+            - tool_name: Nomnom
+              last_seen: 1673322064
+              first_seen: 1673321028
+              total_beacons: 5
 
-    BoardRows:
-      type: array
-      items:
-        $ref: "#/components/schemas/Row"
-
-    Row:
+    BoardRow:
       type: object
       properties:
         service_group:
           type: string
-        teams:
-          type: object
-          properties:
-            team_name_literal:
-              $ref: "#/components/schemas/Host"
+        team_and_hosts:
+          type: array
+          items:
+            type: object
+            properties:
+              team_name:
+                type: string
+              host:
+                $ref: "#/components/schemas/Host"
 
     Host:
       type: object
@@ -58,7 +110,7 @@ components:
         total_beacons:
           type: number
 
-    Tool_description:
+    ToolDescription:
       type: object
       properties:
         tool_name:
@@ -67,6 +119,10 @@ components:
           type: string
         usage:
           type: string
+      example:
+        tool_name: Reptile
+        poc: Hulto
+        usage: See https://github.com/f0rb1dd3n/Reptile
 
     Callback:
       type: object
@@ -75,12 +131,15 @@ components:
           type: string
         ip:
           type: string
+      example:
+        type: Reptile
+        ip: 10.6.0.13
 
-    Response: # Can be referenced as '#/components/schemas/Error'
+    Response:
       type: object
       properties:
-        code:
-          type: string #error ||  success
+        status:
+          type: string # ERROR || SUCCESS
         message:
           type: string
   #-------------------------------
