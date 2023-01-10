@@ -357,7 +357,7 @@ class API():
             app,
             swagger_ui_settings=SwaggerUiSettings(path=self.docs_path),
             title="Swagger pwnbord",
-            version="1.0.0",
+            version="2.0.0",
             components="./docs/components.yaml"
         )
         swagger.add_routes([
