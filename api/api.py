@@ -60,7 +60,7 @@ class API():
             body = await request.text()
             jsond_doc = json.loads(body)
             _ = self.db.BuildBoardFromDictList(jsond_doc)
-            response = self.db.GetBoardDict()
+            board = self.db.GetBoardDict()
             return web.json_response(board)
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(str(e)))
@@ -111,7 +111,6 @@ class API():
         """
         try:
             board = self.db.GetBoardDict()
-
             rows = {}
             for host in board:
                 if host['service_group'] not in rows.keys():
@@ -239,9 +238,9 @@ class API():
                     poc=jsond_doc['poc'],
                     usage=jsond_doc['usage'],
                 )
+                return web.Response(text=self.json_success('Tool created'))
             else:
                 return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "tool_name", "poc", and "usage" keys.'))
-            return web.Response(text=self.json_success('Tool created'))
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
