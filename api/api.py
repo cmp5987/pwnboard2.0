@@ -8,7 +8,6 @@ from xmlrpc.client import ResponseError
 
 from aiohttp import web
 from aiohttp_swagger3 import SwaggerDocs, SwaggerUiSettings
-
 from connection.connection import MongoConnection
 
 
@@ -32,34 +31,10 @@ class API():
         self.db = MongoConnection()
         self.db, self.app, self.swagger = self.init_app()
 
-    def start(self):
-        print(
-            f"Docs availabel at: http://{self.bind_host}:{self.port}{self.docs_path}")
-        web.run_app(self.app, port=self.port, host=self.bind_host)
-
-    def json_error(self, err_msg: str) -> dict:
-        res = {}
-        res['error'] = err_msg
-        return json.dumps(res)
-
-    def json_sucess(self, err_msg: str) -> dict:
-        res = {}
-        res['sucess'] = err_msg
-        return json.dumps(res)
-
-    # redirect api hits to / to docs.
-
-    async def givedocs(self, _: web.Request) -> web.Response:
-        if self.debug:
-            raise web.HTTPFound('/docs')
-        else:
-            raise web.HTTPFound(self.redirect_url)
-
     ## Board setup ###
-
     async def setboard(self, request: web.Request) -> web.Response:
         """
-        Create board a for event.
+        Create board a for an event.
         The board will represent all the hosts.
         ---
         summary: Create a board for the event.
@@ -85,14 +60,14 @@ class API():
             body = await request.text()
             jsond_doc = json.loads(body)
             _ = self.db.BuildBoardFromDictList(jsond_doc)
-            board = self.db.GetBoardDict()
-            return web.Response(text=json.dumps(board))
+            response = self.db.GetBoardDict()
+            return web.json_response(board)
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
     async def getboard(self, request: web.Request) -> web.Response:
         """
-        Get current board a for event.
+        Get current board a for an event.
         The board will represent all the hosts.
         ---
         summary: Get board for the event.
@@ -107,13 +82,18 @@ class API():
                 schema:
                   $ref: '#/components/schemas/Board'
         """
-        board = self.db.GetBoardDict()
-        return web.Response(text=json.dumps(board))
+        try:
+            board = self.db.GetBoardDict()
+            return web.json_response(board)
+        except Exception as e:
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
     async def getboardrows(self, request: web.Request) -> web.Response:
         """
-        Get current board a for event in row format
-        The board will represent all the hosts.
+        Get the rows for the board.
+        Each service group has a row.
+        Each column belongs to a team.
+        Each cell representss a host
         ---
         summary: Get board rows for the event. Used by font-end.
         tags:
@@ -125,48 +105,33 @@ class API():
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/BoardRows'
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/BoardRow'
         """
-        board = self.db.GetBoardDict()
-
-        rows = {}
-        for host in board:
-            if host['service_group'] not in rows.keys():
-                rows[host['service_group']] = {}
-                rows[host['service_group']]['service_group'] = host['service_group']
-                rows[host['service_group']]['teams'] = {}
-
-            rows[host['service_group']]['teams'][host['team_name']] = host
-
-        res = []
-        for row_key in rows.keys():
-            res.append(rows[row_key])
-
-        return web.Response(text=json.dumps(res))
-
-    async def getservicegroups(self, request: web.Request) -> web.Response:
-        """
-        Get a list of all service groups
-        ---
-        summary: Get a list of all service groups.
-        tags:
-          - Board
-
-        responses:
-          '200':
-            description: Expected response to a valid request
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Response'
-        """
-        res: List[str]
-        res = []
         try:
-            service_groups = self.db.GetAllServiceGroups()
-            return web.json_response({"res": service_groups})
+            board = self.db.GetBoardDict()
+
+            rows = {}
+            for host in board:
+                if host['service_group'] not in rows.keys():
+                    rows[host['service_group']] = {}
+                    rows[host['service_group']]['service_group'] \
+                        = host['service_group']
+                    rows[host['service_group']]['team_and_hosts'] = []
+
+                rows[host['service_group']
+                     ]['team_and_hosts'].append({'team_name': host['team_name'], 'host': host})
+
+            res = []
+            for row_key in rows.keys():
+                res.append(rows[row_key])
+
+            return web.json_response(res)
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(str(e)))
+
+    ## Get row / column names ##
 
     async def getteamnames(self, request: web.Request) -> web.Response:
         """
@@ -182,21 +147,21 @@ class API():
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/Response'
+                  type: array
+                  items:
+                      type: string
         """
-        res: List[str]
-        res = []
         try:
             team_names = self.db.GetAllTeamNames()
-            return web.json_response({"res": team_names})
+            return web.json_response(team_names)
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
-    async def gettoolnames(self, request: web.Request) -> web.Response:
+    async def getservicegroups(self, request: web.Request) -> web.Response:
         """
-        Get a list of all tool names.
+        Get a list of all service groups
         ---
-        summary: Get a list of all tool names.
+        summary: Get a list of all service groups
         tags:
           - Board
 
@@ -206,17 +171,41 @@ class API():
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/Response'
+                  type: array
+                  items:
+                      type: string
         """
-        res: List[str]
-        res = []
         try:
-            tool_names = self.db.GetAllToolNames()
-            return web.json_response({"res": tool_names})
+            service_groups = self.db.GetAllServiceGroups()
+            return web.json_response(service_groups)
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
-    ### Tool desription registration ###
+    ## Tool names and descriptions ##
+
+    async def gettoolnames(self, request: web.Request) -> web.Response:
+        """
+        Get a list of all tool names.
+        ---
+        summary: Get a list of all tool names.
+        tags:
+          - Tool
+
+        responses:
+          '200':
+            description: Expected response to a valid request
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                      type: string
+        """
+        try:
+            tool_names = self.db.GetAllToolNames()
+            return web.json_response(tool_names)
+        except Exception as e:
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
     async def settooldescription(self, request: web.Request) -> web.Response:
         """
@@ -225,14 +214,14 @@ class API():
         ---
         summary: Create a tool description.
         tags:
-          - Tool_description
+          - Tool
         requestBody:
           description: JSON document to describe tool.
           required: true
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tool_description'
+                $ref: '#/components/schemas/ToolDescription'
 
         responses:
           '200':
@@ -242,20 +231,19 @@ class API():
                 schema:
                   $ref: '#/components/schemas/Response'
         """
-        body = await request.text()
         try:
-            jsond_doc = json.loads(body)
+            jsond_doc = await request.json()
+            if 'tool_name' in jsond_doc and 'poc' in jsond_doc and 'usage' in jsond_doc:
+                self.db.Createtool_description(
+                    tool_name=jsond_doc['tool_name'],
+                    poc=jsond_doc['poc'],
+                    usage=jsond_doc['usage'],
+                )
+            else:
+                return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "tool_name", "poc", and "usage" keys.'))
+            return web.Response(text=self.json_success('Tool created'))
         except Exception as e:
-            return web.HTTPInternalServerError(text=self.json_error(f'{e}'))
-        if 'toolname' in jsond_doc and 'poc' in jsond_doc and 'usage' in jsond_doc:
-            self.db.Createtool_description(
-                tool_name=jsond_doc['toolname'],
-                poc=jsond_doc['poc'],
-                usage=jsond_doc['usage'],
-            )
-        else:
-            return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))
-        return web.Response(text=self.json_sucess('Tool created.'))
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
     async def gettooldescription(self, request: web.Request) -> web.Response:
         """
@@ -264,7 +252,7 @@ class API():
         ---
         summary: Get a list or single tool descriptions
         tags:
-          - Tool_description
+          - Tool
         parameters:
           - in: query
             name: tool_names
@@ -281,22 +269,24 @@ class API():
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/Response'
+                  $ref: '#/components/schemas/ToolDescription'
         """
-        res: List[dict]
-        res = []
-        if 'tool_names' in request.rel_url.query.keys():
-            tool_names = list(request.rel_url.query['tool_names'].split(","))
-            tools = self.db.Gettool_descriptions(tool_names)
-            for tool in tools:
-                res.append(tool.toDict())
-        else:
-            return web.HTTPInternalServerError(text=self.json_error('tool_names cannot be absent'))
+        try:
+            res: List[dict]
+            res = []
+            if 'tool_names' in request.rel_url.query.keys():
+                tool_names = list(
+                    request.rel_url.query['tool_names'].split(","))
+                tools = self.db.Gettool_descriptions(tool_names)
+                for tool in tools:
+                    res.append(tool.toDict())
+                return web.json_response(res)
+            else:
+                return web.HTTPInternalServerError(text=self.json_error('tool_names cannot be absent'))
+        except Exception as e:
+            return web.HTTPInternalServerError(text=self.json_error(str(e)))
 
-        return web.Response(text=json.dumps(res))
-
-    ### Callback ###
-
+    ## Callback ##
     async def callback(self, request: web.Request):
         """
           Callback for agents to hit identifying them as still active.
@@ -320,114 +310,43 @@ class API():
                   schema:
                     $ref: '#/components/schemas/Response'
         """
-        body = await request.text()
         try:
+            body = await request.text()
             jsond_doc = json.loads(body)
+            if 'type' in jsond_doc and 'ip' in jsond_doc:
+                self.db.RegisterCallback(
+                    primary_ip=jsond_doc['ip'],
+                    tool_name=jsond_doc['type']
+                )
+            else:
+                return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))
+            return web.Response(text=self.json_success('Callback registered.'))
         except Exception as e:
             return web.HTTPInternalServerError(text=self.json_error(f'{e}'))
-        if 'type' in jsond_doc and 'ip' in jsond_doc:
-            self.db.RegisterCallback(
-                primary_ip=jsond_doc['ip'],
-                tool_name=jsond_doc['type']
-            )
+
+    def start(self):
+        print(
+            f"Docs availabel at: http://{self.bind_host}:{self.port}{self.docs_path}")
+        web.run_app(self.app, port=self.port, host=self.bind_host)
+
+    def json_error(self, err_msg: str) -> dict:
+        res = {}
+        res['status'] = 'ERROR'
+        res['message'] = err_msg
+        return json.dumps(res)
+
+    def json_success(self, err_msg: str) -> dict:
+        res = {}
+        res['status'] = 'SUCCESS'
+        res['message'] = err_msg
+        return json.dumps(res)
+
+    # redirect api hits to / to docs.
+    async def givedocs(self, _: web.Request) -> web.Response:
+        if self.debug:
+            raise web.HTTPFound('/docs')
         else:
-            return web.HTTPInternalServerError(text=self.json_error('Tool Description must have "toolname", "poc", and "usage" keys.'))
-        return web.Response(text=self.json_sucess('Callback registered.'))
-
-    ### Filtering ###
-
-    async def filter(self, request: web.Request) -> web.Response:
-        """
-        Filter for specific hosts based on a numebr of fields.
-        ---
-        summary: Filter for specific hosts based on a numebr of fields.
-        tags:
-          - Filter
-        parameters:
-          - in: query
-            name: teams
-            schema:
-              type: array
-              items:
-                type: string
-            required: false
-            description: The name or list of names of the team(s) to query.
-          - in: query
-            name: service_groups
-            schema:
-              type: array
-              items:
-                type: string
-            required: false
-            description: The name or list of names of the service_group(s) to query.
-          - in: query
-            name: oses
-            schema:
-              type: array
-              items:
-                type: string
-            required: false
-            description: The name or list of names of the os(es) to query.
-          - in: query
-            name: tool_names
-            schema:
-              type: array
-              items:
-                type: string
-            required: false
-            description: The name or list of names of the tool_name(s) to query.
-          - in: query
-            name: toolname
-            schema:
-              type: string
-            required: false
-            description: The type of tool matching to do. (active, inactive, installed, never)
-          - in: query
-            name: timeout
-            schema:
-              type: integer
-            required: false
-            description: The number of seconds to consider a callback timedout.
-
-        responses:
-          '200':
-            description: Expected response to a valid request
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Response'
-        """
-
-        teams = service_groups = oses = tool_names = []
-        tool_match = "active"  # never, inactive
-        timeout = 480
-        if 'teams' in request.rel_url.query.keys():
-            teams = list(request.rel_url.query['teams'].split(","))
-
-        if 'service_groups' in request.rel_url.query.keys():
-            service_groups = list(
-                request.rel_url.query['service_groups'].split(","))
-
-        if 'oses' in request.rel_url.query.keys():
-            oses = list(request.rel_url.query['oses'].split(","))
-
-        if 'tool_names' in request.rel_url.query.keys():
-            tool_names = list(request.rel_url.query['tool_names'].split(","))
-
-        if 'tool_match' in request.rel_url.query.keys():
-            tool_match = str(request.rel_url.query['tool_names'])
-
-        if 'timeout' in request.rel_url.query.keys():
-            tmp = str(request.rel_url.query['timeout'])
-            if len(tmp) > 0:
-                if tmp.isnumeric():
-                    timeout = int(request.rel_url.query['timeout'])
-                else:
-                    return web.HTTPInternalServerError(text=self.json_error('Invalid filter. Timeout must be a nmuber.'))
-
-        result = self.db.Filter(teams, service_groups, oses,
-                                tool_names, tool_match, timeout)
-        return web.Response(text=str(result))
+            raise web.HTTPFound(self.redirect_url)
 
     def init_app(self):
         db = MongoConnection()
@@ -443,24 +362,27 @@ class API():
         )
         swagger.add_routes([
             web.get("/", self.givedocs, allow_head=False),
-            web.get("/filter", filter, allow_head=False),
             web.post("/setboard", self.setboard),
             web.get("/getboard", self.getboard, allow_head=False),
             web.get("/getboardrows", self.getboardrows, allow_head=False),
-            web.post("/settooldesc", self.settooldescription),
-            web.get("/gettooldesc", self.gettooldescription, allow_head=False),
-            web.post("/generic", self.callback),
+            web.get("/getteamnames", self.getteamnames, allow_head=False),
             web.get("/getservicegroups",
                     self.getservicegroups, allow_head=False),
-            web.get("/getteamnames",
-                    self.getteamnames, allow_head=False),
-            web.get("/gettoolnames",
-                    self.gettoolnames, allow_head=False),
-
+            web.get("/gettoolnames", self.gettoolnames, allow_head=False),
+            web.post("/settooldescription",
+                     self.settooldescription),
+            web.get("/gettooldescription",
+                    self.gettooldescription, allow_head=False),
+            web.post("/generic",
+                     self.callback),
+            web.get("/generic",
+                    self.callback, allow_head=False),
         ])
         return db, app, swagger
 
 
 if __name__ == '__main__':
     pwnboardAPI = API(debug=True)
+    pwnboardAPI.start()
+    pwnboardAPI.start()
     pwnboardAPI.start()
