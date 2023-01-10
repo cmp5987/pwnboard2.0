@@ -400,4 +400,3 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/node,vim,python,flask
 api/connection/__pycache__/
-api/connection/__pycache__/connection.cpython-38.pyc
