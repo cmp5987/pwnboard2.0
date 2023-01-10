@@ -268,14 +268,15 @@ class API():
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/ToolDescription'
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ToolDescription'
         """
         try:
             res: List[dict]
             res = []
-            if 'tool_names' in request.rel_url.query.keys():
-                tool_names = list(
-                    request.rel_url.query['tool_names'].split(","))
+            if 'tool_names' in request.query.keys():
+                tool_names = request.query.getall('tool_names')
                 tools = self.db.Gettool_descriptions(tool_names)
                 for tool in tools:
                     res.append(tool.toDict())
